@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:app2/shared/tools.dart';
 
-class languagePage extends StatefulWidget {
-  const languagePage({Key? key}) : super(key: key);
+class LanguagePage extends StatefulWidget {
+  const LanguagePage({Key? key}) : super(key: key);
   @override
-  State<languagePage> createState() => _languagePageState();
+  State<LanguagePage> createState() => _LanguagePageState();
 }
 
-class _languagePageState extends State<languagePage> {
+class _LanguagePageState extends State<LanguagePage> {
 
   String language = 'Choose a language';
 @override
   void didChangeDependencies() {
-    Provider.of<AppManager>(context).readPref('Language').then((value)
+  AppManager.readPref('Language').then((value)
     {if(value!=null)Navigator.popAndPushNamed(context,'/school');});
     super.didChangeDependencies();
   }
@@ -33,7 +32,7 @@ class _languagePageState extends State<languagePage> {
                     child: ElevatedButton(
                         child: const Text('English',style:  TextStyle(fontSize: 25),),
                         onPressed: () {
-                          Provider.of<AppManager>(context, listen: false).savePref('Language', 'English');
+                          AppManager.savePref('Language', 'English');
                           Navigator.popAndPushNamed(context,'/school');
                       },
                         onHover: (value) =>setState(() {language = 'Choose a language';}),
@@ -44,7 +43,7 @@ class _languagePageState extends State<languagePage> {
                     child: ElevatedButton(
                         child: const Text('العربية',style: TextStyle(fontSize: 25),),
                         onPressed: () {
-                          Provider.of<AppManager>(context, listen: false).savePref('Language', 'Arabic');
+                          AppManager.savePref('Language', 'Arabic');
                           Navigator.popAndPushNamed(context,'/school');                    },
                       onHover: (value) => setState(() {language = 'اختر لغة';}),
 

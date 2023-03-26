@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:app2/shared/tools.dart';
 
 class schoolPage extends StatefulWidget {
@@ -10,7 +9,7 @@ class schoolPage extends StatefulWidget {
 }
 
 class _schoolPageState extends State<schoolPage> {
-  var data;
+  dynamic data;
 
   String language = 'English';
   Map<String, String> map = {
@@ -26,24 +25,25 @@ class _schoolPageState extends State<schoolPage> {
     'English4': 'Hanafi'
   };
   next(String s){
-    Provider.of<AppManager>(context, listen: false).savePref('School', s);
+    AppManager.savePref('School', s);
     Navigator.popAndPushNamed(context,'/data');
   }
   @override
   void didChangeDependencies() {
-    Provider.of<AppManager>(context, listen: false).readPref('School').then((value)
+    AppManager.readPref('School').then((value)
     {if(value!=null)Navigator.popAndPushNamed(context,'/data');});
-    Provider.of<AppManager>(context).readPref('Language').then((value)
+    AppManager.readPref('Language').then((value)
          {setState(() {data = value;});});
     super.didChangeDependencies();
   }
   @override
   Widget build(BuildContext context) {
 
-    if (map[data] == null)
+    if (map[data] == null) {
       language = map['English']!;
-    else
+    } else {
       language = map[data]!;
+    }
 
     return Scaffold(
       appBar: AppBar(),

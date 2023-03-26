@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 class myDrawer extends StatefulWidget {
 
-  myDrawer();
+  const myDrawer({super.key});
 
   @override
   State<myDrawer> createState() => _myDrawerState();
@@ -13,15 +13,21 @@ class myDrawer extends StatefulWidget {
 class _myDrawerState extends State<myDrawer> {
 
   List<String> itemsL = <String>['English', 'Arabic'];
-  List<String> itemsS = <String>['الشافعي', 'الحنبلي', 'المالكي', 'الحنفي',];
+  List<String> itemsS = <String>["Shafi'i", 'Hanbali', 'Maliki', 'Hanafi'];
+  List<String> itemsC = <String>['AED', 'USD'];
 
-  var selectedLanguage;
-  var selectedSchool;
+  String? selectedLanguage;
+  String? selectedSchool;
+  String? selectedCurrency;
 
   @override
   void didChangeDependencies() {
-    Provider.of<AppManager>(context).readPref('Language').then((value)
-    {setState(() {selectedLanguage = value;});});
+    AppManager.readPref('Language').then((value)
+    {selectedLanguage = value;});
+    AppManager.readPref('School').then((value)
+    {selectedSchool = value;});
+    AppManager.readPref('pCurrency').then((value)
+    {setState(() {selectedCurrency = value;});});
     super.didChangeDependencies();
   }
   @override
@@ -38,7 +44,7 @@ class _myDrawerState extends State<myDrawer> {
                     Switch(
                     value: Provider.of<AppManager>(context).thememode == ThemeMode.dark,
                     onChanged: (value) {
-                      Provider.of<AppManager>(context, listen: false).savePref('isDark', value);
+                      AppManager.savePref('isDark', value);
                       Provider.of<AppManager>(context, listen: false).toggleTheme(Provider.of<AppManager>(context, listen: false).thememode != ThemeMode.dark);
                       setState(() {
                       });
@@ -47,6 +53,8 @@ class _myDrawerState extends State<myDrawer> {
 
                   ],
             ),
+                const Divider(),
+                const Text('Language'),
                 DropdownButton(
                     iconSize: 30,
                     iconEnabledColor: Colors.blue,
@@ -61,9 +69,11 @@ class _myDrawerState extends State<myDrawer> {
                     onChanged: (var newValue) {
                       setState(() {
                         selectedLanguage = newValue;
-                        Provider.of<AppManager>(context, listen: false).savePref('Language', selectedLanguage);
+                        AppManager.savePref('Language', selectedLanguage);
                       });
                     }),
+                const Divider(),
+                const Text('School'),
                 DropdownButton(
                     iconSize: 30,
                     iconEnabledColor: Colors.blue,
@@ -78,10 +88,29 @@ class _myDrawerState extends State<myDrawer> {
                     onChanged: (var newValue) {
                       setState(() {
                         selectedSchool = newValue;
-                        Provider.of<AppManager>(context, listen: false).savePref('School', selectedSchool);
+                        AppManager.savePref('School', selectedSchool);
                       });
                     }),
+                const Divider(),
+                const Text('Currency'),
+                DropdownButton(
+                    iconSize: 30,
+                    iconEnabledColor: Colors.blue,
+                    enableFeedback: true,
+                    value: selectedCurrency,
+                    items: itemsC.map((String items) {
+                      return DropdownMenuItem(
+                        value: items,
+                        child: Text(items),
+                      );
+                    }).toList(),
+                    onChanged: (var newValue) {
+                      setState(() {
+                        selectedCurrency = newValue;
+                        AppManager.savePref('pCurrency', selectedCurrency);
 
+                      });
+                    }),
               ],
         )));
   }

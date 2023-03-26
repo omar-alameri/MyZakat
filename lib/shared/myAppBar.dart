@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class myAppBar extends AppBar {
 
-  myAppBar();
+  myAppBar({super.key});
 
   @override
   State<myAppBar> createState() => _myAppBarState();
