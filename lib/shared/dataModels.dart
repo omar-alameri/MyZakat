@@ -28,7 +28,7 @@ class Money {
       'amount': amount,
       'currency': currency,
       'userID': userId,
-      'Date': date.toIso8601String(),
+      'date': date.toIso8601String(),
     };
   }
 
@@ -69,7 +69,7 @@ class Gold {
       'amount': amount,
       'unit': unit,
       'userID': userId,
-      'Date': date.toIso8601String(),
+      'date': date.toIso8601String(),
     };
   }
 
@@ -101,7 +101,7 @@ class Silver {
     userId: json['userId'],
     date: DateTime.parse(json['date']),
   );
-  // Convert a Gold into a Map. The keys must correspond to the names of the
+  // Convert a Silver into a Map. The keys must correspond to the names of the
   // columns in the database.
   Map<String, dynamic> toMap() {
     return {
@@ -109,7 +109,7 @@ class Silver {
       'amount': amount,
       'unit': unit,
       'userID': userId,
-      'Date': date.toIso8601String(),
+      'date': date.toIso8601String(),
     };
   }
 
@@ -150,7 +150,7 @@ class Cattle {
       'amount': amount,
       'type': type,
       'userID': userId,
-      'Date': date.toIso8601String(),
+      'date': date.toIso8601String(),
     };
   }
 
@@ -159,5 +159,90 @@ class Cattle {
   @override
   String toString() {
     return 'Cattle{id: $id, userID: $userId, date: $date amount: $amount, type: $type}';
+  }
+}
+
+class Crops {
+  final int? id;
+  final int userId;
+  final DateTime date;
+  final double amount;
+  final String type;
+  final double price;
+
+  const Crops({
+    this.id,
+    required this.userId,
+    required this.date,
+    required this.amount,
+    required this.type,
+    required this.price,
+  });
+  factory Crops.fromMap(Map<String, dynamic> json) =>  Crops(
+    id: json['id'],
+    amount: json['amount'],
+    price: json['price'],
+    type: json['type'],
+    userId: json['userId'],
+    date: DateTime.parse(json['date']),
+  );
+  // Convert a Crops into a Map. The keys must correspond to the names of the
+  // columns in the database.
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'amount': amount,
+      'price': price,
+      'type': type,
+      'userID': userId,
+      'date': date.toIso8601String(),
+    };
+  }
+  // Implement toString to make it easier to see information
+  @override
+  String toString() {
+    return 'Crops{id: $id, userID: $userId, date: $date amount: $amount, type: $type, price: $price}';
+  }
+}
+class Stock {
+  final int? id;
+  final int userId;
+  final DateTime date;
+  final double amount;
+  final String stock;
+  final double price;
+
+  const Stock({
+    this.id,
+    required this.userId,
+    required this.date,
+    required this.amount,
+    required this.stock,
+    required this.price,
+  });
+  factory Stock.fromMap(Map<String, dynamic> json) =>  Stock(
+    id: json['id'],
+    amount: json['amount'],
+    price: json['price'],
+    stock: json['stock'],
+    userId: json['userId'],
+    date: DateTime.parse(json['date']),
+  );
+  // Convert a Crops into a Map. The keys must correspond to the names of the
+  // columns in the database.
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'amount': amount,
+      'price': price,
+      'stock': stock,
+      'userID': userId,
+      'date': date.toIso8601String(),
+    };
+  }
+  // Implement toString to make it easier to see information
+  @override
+  String toString() {
+    return 'Stock{id: $id, userID: $userId, date: $date amount: $amount, stock: $stock, price: $price}';
   }
 }

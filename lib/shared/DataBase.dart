@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:app2/shared/tools.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:app2/shared/dataModels.dart';
@@ -24,46 +25,81 @@ class DatabaseHelper {
   }
 
   Future _onCreate(Database db, int version) async {
+    String id = 'id INTEGER PRIMARY KEY';
+    String int = 'Integer not NULL';
+    String string = 'String not NULL';
+    String double = 'Double not NULL';
+
     await db.execute('''
       CREATE TABLE Money(
-          id INTEGER PRIMARY KEY,
-          amount Double not NULL,
-          currency String not NULL,
-          userId Integer not NULL,
+          $id,
+          amount $double,
+          currency $string,
+          userId $int,
+          date Date
+      )      
+      ''');
+    await db.execute('''
+      CREATE TABLE Currency(
+          $id,
+          initial $string,
+          final $string,
+          rate $double,
           date Date
       )      
       ''');
     await db.execute('''
       CREATE TABLE Gold(
-          id INTEGER PRIMARY KEY,
-          amount Double not NULL,
-          unit String not NULL,
-          userId Integer not NULL,
+          $id,
+          amount $double,
+          unit $string,
+          userId $int,
           date Date
       )      
       ''');
     await db.execute('''
       CREATE TABLE Silver(
-          id INTEGER PRIMARY KEY,
-          amount Double not NULL,
-          unit String not NULL,
-          userId Integer not NULL,
+          $id,
+          amount $double,
+          unit $string,
+          userId $int,
           date Date
       )      
       ''');
     await db.execute('''
       CREATE TABLE Cattle(
-          id INTEGER PRIMARY KEY,
-          amount Integer not NULL,
-          type String not NULL,
-          userId Integer not NULL,
+          $id,
+          amount $int,
+          type $string,
+          userId $int,
+          date Date
+      )      
+      ''');
+    await db.execute('''
+      CREATE TABLE Crops(
+          $id,
+          amount $double,
+          price $double,
+          type $string,
+          userId $int,
+          date Date
+      )      
+      ''');
+    await db.execute('''
+      CREATE TABLE Stock(
+          $id,
+          amount $double,
+          price $double,
+          stock $string,
+          userId $int,
           date Date
       )      
       ''');
   }
   Future<List<dynamic>> getData(int userId,String type) async {
     Database db = await instance.database;
-    var data = await db.query(type,where: 'userId = ?',whereArgs: [userId]);
+    try {
+      var data = await db.query(type, where: 'userId = ?', whereArgs: [userId]);
     switch(type) {
       case 'Money' :
         return data.isNotEmpty ? data.map((c) => Money.fromMap(c)).toList() : [];
@@ -73,8 +109,11 @@ class DatabaseHelper {
         return data.isNotEmpty ? data.map((c) => Silver.fromMap(c)).toList() : [];
       case 'Cattle':
         return data.isNotEmpty ? data.map((c) => Cattle.fromMap(c)).toList() : [];
+      case 'Crops':
+        return data.isNotEmpty ? data.map((c) => Crops.fromMap(c)).toList() : [];
       default : return [];
     }
+  } catch(e){return[];}
   }
   Future<int> addData(var data) async {
     Database db = await instance.database;
@@ -84,5 +123,41 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(data.runtimeType.toString(), where: 'id = ?', whereArgs: [data.id]);
   }
+  Future<int> updateData(var data) async {
+    Database db = await instance.database;
+    return await db.update(data.runtimeType.toString(), data.toMap(), where: 'id = ?', whereArgs: [data.id]);
+  }
+  Future<double> convertRate(String Initial, String Final) async {
+    double rate;
+    Database db = await instance.database;
+    //await db.rawDelete("delete from Currency where id=id");
+    var data = await db.query('Currency', where: 'initial = ? AND final = ?', whereArgs: [Initial,Final],orderBy: 'date');
+    if (data.isEmpty) {
+      // print('nodata');
+      rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
+      if(rate !=-1) {
+        await db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
+      }
+      return rate;
+    } else {
+      DateTime d = DateTime.parse(data.last['date'] as String);
+      //print(d.toString()+DateTime.now().toString());
+      if(DateTime.now().minute - d.minute > 10 ) {
+        // print('outdated');
+        rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
+        if(rate !=-1) {
+          await db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
+          return rate;
+        } else{
+          rate = data.last['rate'] as double;
+          return rate;
+        }
 
+      } else {
+        // print('up to date');
+        rate = data.last['rate'] as double;
+        return rate;
+      }
+    }
+  }
 }

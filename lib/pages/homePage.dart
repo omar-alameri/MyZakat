@@ -12,10 +12,12 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   String stock = '';
   @override
+
   Widget build(BuildContext context) {
-    AppManager.get_StockPrice('MSFT').then((value) {
+    AppManager.get_StockPrice('TSLA').then((value) {
       if (stock != value.toString())
       {stock = value.toString();setState(() {});}});
+
     return Scaffold(
 
       drawer: const myDrawer(),
@@ -31,6 +33,7 @@ class _homePageState extends State<homePage> {
               child: const Text('Start'),
             ),
             Text(stock),
+            //PageView()
             // DropdownSearch<String>(
             //   popupProps: PopupProps.menu(
             //     showSearchBox: true,

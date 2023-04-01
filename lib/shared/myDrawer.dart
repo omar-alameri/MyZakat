@@ -41,7 +41,7 @@ class _myDrawerState extends State<myDrawer> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const Icon(Icons.light_mode_outlined),
-                    Switch(
+                    Switch.adaptive(
                     value: Provider.of<AppManager>(context).thememode == ThemeMode.dark,
                     onChanged: (value) {
                       AppManager.savePref('isDark', value);

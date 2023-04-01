@@ -3,6 +3,9 @@ import 'package:app2/shared/dataModels.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:app2/shared/DataBase.dart';
+import 'package:flutter/services.dart';
+
+
 
 class DataType extends StatefulWidget {
   final String datatype;
@@ -15,13 +18,24 @@ class DataType extends StatefulWidget {
 
 class _DataTypeState extends State<DataType> {
   dynamic selected;
-  TextEditingController input = TextEditingController();
-  double? height = 15;
+  TextEditingController input1 = TextEditingController();
+  TextEditingController input2 = TextEditingController();
+
   Widget holder = const CircularProgressIndicator();
   int? selectedId;
-  double total = 0;
+  String? error;
   String preferredCurrency = '';
   List<String> goldRate = [];
+  final double sizeRatio = 0.6;
+  TextInputFormatter doubleFormatter = TextInputFormatter.withFunction((oldValue, newValue)
+  {
+    if (double.tryParse(newValue.text) != null || newValue.text == '' ||newValue.text == '.') {
+      return newValue;
+    }
+    else {
+      return oldValue;
+    }
+  });
 
   @override
   void didChangeDependencies() {
@@ -29,49 +43,7 @@ class _DataTypeState extends State<DataType> {
     AppManager.readPref('pCurrency').then((value)
          {setState(() {preferredCurrency = value;});});
   }
-  Widget dataTable(String dataType){
-    return FutureBuilder<List<dynamic>>(
-        future: DatabaseHelper.instance.getData(1,dataType),
-        builder: (BuildContext context,
-            AsyncSnapshot<List<dynamic>> snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: Text('Loading...'));
-          }
-          return snapshot.data!.isEmpty
-              ? const Center(child: Text('No Gold in List.'))
-              : ListView(
-            children: snapshot.data!.map((dataInstance) {
-              return Center(
-                heightFactor: 1,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(flex:3,child: Text(dataInstance.amount.toString())),
-                        Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency :
-                        dataType == 'Cattle' ? dataInstance.type : dataInstance.unit)),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: ()  {
-                              setState(() {
-                                DatabaseHelper.instance.removeData(dataInstance);
-                              });
-                            },
-                          ),
-                        ),
-                      ],
 
-                    ),
-                    const Divider(),
-                  ],
-                ),
-              );
-            }).toList(),
-          );
-        });
-  }
   Widget MoneyWidget() {
     return Column(
       children: [
@@ -80,18 +52,42 @@ class _DataTypeState extends State<DataType> {
             Expanded(
                 flex: 3,
                 child: TextField(
-                    decoration: const InputDecoration(border: OutlineInputBorder()),
-                    keyboardType: const TextInputType.numberWithOptions(signed: false),
-                    style: const TextStyle(fontSize:20),
-                    controller: input,
+
+
+                  decoration:  const InputDecoration(
+                    label: Text('Amount'),
+                    labelStyle: TextStyle(color: Colors.green),
+
+                    constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(32)),
+                        borderSide: BorderSide(color: Colors.green)
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.grey)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20,),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                  style: const TextStyle(fontSize:20),
+                  controller: input1,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.deny(' '),
+                    FilteringTextInputFormatter.deny('-'),
+                    doubleFormatter
+                  ],
+
                   ),),
             Expanded(
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
                 child: DropdownButton(
-
-                    hint: const Text('Select currency'),
+                    underline: const Text(''),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(5),
+                    hint: const Text('Currency'),
                     value: selected,
                     items: const [
                       DropdownMenuItem(
@@ -114,21 +110,22 @@ class _DataTypeState extends State<DataType> {
               flex: 1,
               child: IconButton(
                 icon: const Icon(Icons.add),
-                onPressed: () async {
-                  if(input.text != '') {
-                    await DatabaseHelper.instance.addData(
-                    Money(amount: double.parse(input.text),currency: selected,userId: 1,date: DateTime.now()),
-                  );
+                onPressed: ()  {
+                  if(input1.text != ''&& input1.text != '.'&& double.parse(input1.text)!=0&&selected!=null) {
+                    DatabaseHelper.instance.addData(
+                    Money(amount: double.parse(input1.text),currency: selected,userId: 1,date: DateTime.now()),
+                    );
+                    DatabaseHelper.instance.convertRate(selected, preferredCurrency);
+                  }else {
+                    setState(() {
+                      error = null;
+                    });
                   }
-                  AppManager.calcTotalMoney().then((value)
-                  {setState(() {total=value;
-                  });});
-                  setState(() {
-                    if(input.text!=''&&selected!=null) {
-                      input.text='';
-                    }
-                    height=15 + (height ?? 0) ;
-                  });
+                  if(input1.text!=''&&selected!=null) {
+                    setState(() {
+                      input1.text = '';
+                    });
+                  }
                 },
               ),
             ),
@@ -136,10 +133,10 @@ class _DataTypeState extends State<DataType> {
         ),
         const Divider(height: 10),
         SizedBox(
-             height: MediaQuery.of(context).size.height*0.4,
-          child: dataTable('Money')
+             height: MediaQuery.of(context).size.height*sizeRatio,
+          child:  DataTable(dataType: 'Money')
         ),
-        const Divider(height: 20, color: Colors.green,),
+        const Divider(height: 10, color: Colors.green,),
         ElevatedButton(onPressed: calculateMoneyZakat, child: const Text('Calculate Zakat')),
       ],
     );
@@ -149,7 +146,7 @@ class _DataTypeState extends State<DataType> {
     AppManager.get_GoldPriceDubai().then((value) {
       if (goldRate.toString() != value.toString())
       {goldRate = value;
-      holder = Text('1: ${goldRate[0]} 2: ${goldRate[1]}, 3: ${goldRate[2]}, 4: ${goldRate[3]} ');
+      holder = Text('1: ${goldRate[0]} 2: ${goldRate[1]} 3: ${goldRate[2]} 4: ${goldRate[3]} ',textDirection: TextDirection.ltr,);
         setState(() {});
       }});
     return Column(
@@ -160,20 +157,30 @@ class _DataTypeState extends State<DataType> {
             Expanded(
               flex: 3,
               child: TextField(
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
-                  keyboardType: const TextInputType.numberWithOptions(signed: false),
-                  //contextMenuBuilder: ,
-                  style: const TextStyle(fontSize:20),
-                  controller: input,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Weight (Gram)',
                 ),
+                keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                style: const TextStyle(fontSize:20),
+                controller: input1,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(' '),
+                  FilteringTextInputFormatter.deny('-'),
+                  doubleFormatter
+                ],
+
+              ),
             ),
             Expanded(
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
                 child: DropdownButton(
-
-                    hint: const Text('Select unit'),
+                    underline: const Text(''),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(5),
+                    hint: const Text('Unit'),
                     value: selected,
                     items: const [
                       DropdownMenuItem(
@@ -205,17 +212,16 @@ class _DataTypeState extends State<DataType> {
               child: IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () async {
-                  if(input.text != '') {
+                  if(input1.text != ''&& input1.text !='.'&&double.parse(input1.text)!=0) {
                     await DatabaseHelper.instance.addData(
-                      Gold(amount: double.parse(input.text),unit: selected,userId: 1,date: DateTime.now()),
+                      Gold(amount: double.parse(input1.text),unit: selected,userId: 1,date: DateTime.now()),
                     );
                   }
-                  setState(() {
-                    if(input.text!=''&&selected!=null) {
-                      input.text='';
-                    }
-                    height=15 + (height ?? 0) ;
-                  });
+                  if(input1.text!=''&&selected!=null) {
+                    setState(() {
+                      input1.text = '';
+                    });
+                  }
                 },
               ),
             ),
@@ -224,8 +230,8 @@ class _DataTypeState extends State<DataType> {
         const Divider(height: 10),
 
         SizedBox(
-          height: MediaQuery.of(context).size.height*0.4,
-          child: dataTable('Gold')
+          height: MediaQuery.of(context).size.height*sizeRatio,
+          child: DataTable(dataType: 'Gold')
         ),
         holder,
       ],
@@ -233,11 +239,7 @@ class _DataTypeState extends State<DataType> {
   }
   Widget SilverWidget() {
 
-    AppManager.get_GoldPriceDubai().then((value) {
-      if (goldRate.toString() != value.toString())
-      {goldRate = value;
-      holder = Text('1: ${goldRate[0]} 2: ${goldRate[1]}, 3: ${goldRate[2]}, 4: ${goldRate[3]} ');
-      }});
+
     return Column(
 
       children: [
@@ -246,11 +248,18 @@ class _DataTypeState extends State<DataType> {
             Expanded(
               flex: 3,
               child: TextField(
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-                keyboardType: const TextInputType.numberWithOptions(signed: false),
-                //contextMenuBuilder: ,
+                decoration: const InputDecoration(
+                    hintText: 'Weight (Gram)',
+                    border: OutlineInputBorder()),
+                keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                 style: const TextStyle(fontSize:20),
-                controller: input,
+                controller: input1,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(' '),
+                  FilteringTextInputFormatter.deny('-'),
+                  doubleFormatter
+                ],
+
               ),
             ),
             Expanded(
@@ -258,8 +267,10 @@ class _DataTypeState extends State<DataType> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
                 child: DropdownButton(
-
-                    hint: const Text('Select unit'),
+                    underline: const Text(''),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(5),
+                    hint: const Text('Unit'),
                     value: selected,
                     items: const [
                       DropdownMenuItem(
@@ -295,17 +306,16 @@ class _DataTypeState extends State<DataType> {
               child: IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () async {
-                  if(input.text != '') {
+                  if(input1.text != '' && input1.text !='.'&&double.parse(input1.text)!=0) {
                     await DatabaseHelper.instance.addData(
-                      Silver(amount: double.parse(input.text),unit: selected,userId: 1,date: DateTime.now()),
+                      Silver(amount: double.parse(input1.text),unit: selected,userId: 1,date: DateTime.now()),
                     );
                   }
-                  setState(() {
-                    if(input.text!=''&&selected!=null) {
-                      input.text='';
-                    }
-                    height=15 + (height ?? 0) ;
-                  });
+                  if(input1.text!=''&&selected!=null) {
+                    setState(() {
+                      input1.text = '';
+                    });
+                  }
                 },
               ),
             ),
@@ -314,8 +324,8 @@ class _DataTypeState extends State<DataType> {
         const Divider(height: 10),
 
         SizedBox(
-          height: MediaQuery.of(context).size.height*0.4,
-          child: dataTable('Silver')
+          height: MediaQuery.of(context).size.height*sizeRatio,
+          child: DataTable(dataType: 'Silver')
         ),
 
       ],
@@ -330,11 +340,15 @@ class _DataTypeState extends State<DataType> {
             Expanded(
               flex: 3,
               child: TextField(
-                decoration: const InputDecoration(border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                    hintText: 'Number',
+                    border: OutlineInputBorder()),
                 keyboardType: const TextInputType.numberWithOptions(signed: false),
-                //contextMenuBuilder: ,
                 style: const TextStyle(fontSize:20),
-                controller: input,
+                controller: input1,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
               ),
             ),
             Expanded(
@@ -342,8 +356,10 @@ class _DataTypeState extends State<DataType> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
                 child: DropdownButton(
-
-                    hint: const Text('Select type'),
+                    underline: const Text(''),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(5),
+                    hint: const Text('Type'),
                     value: selected,
                     items: const [
                       DropdownMenuItem(
@@ -371,17 +387,16 @@ class _DataTypeState extends State<DataType> {
               child: IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () async {
-                  if(input.text != '') {
+                  if(input1.text != ''&&int.parse(input1.text) !=0) {
                     await DatabaseHelper.instance.addData(
-                      Cattle(amount: int.parse(input.text),type: selected,userId: 1,date: DateTime.now()),
+                      Cattle(amount: int.parse(input1.text),type: selected,userId: 1,date: DateTime.now()),
                     );
                   }
-                  setState(() {
-                    if(input.text!=''&&selected!=null) {
-                      input.text='';
-                    }
-                    height=15 + (height ?? 0) ;
-                  });
+                  if(input1.text!=''&&selected!=null) {
+                    setState(() {
+                      input1.text = '';
+                    });
+                  }
                 },
               ),
             ),
@@ -390,13 +405,131 @@ class _DataTypeState extends State<DataType> {
         const Divider(height: 10),
 
         SizedBox(
-          height: MediaQuery.of(context).size.height*0.4,
-          child: dataTable('Cattle')
+          height: MediaQuery.of(context).size.height*sizeRatio,
+          child: DataTable(dataType: 'Cattle')
         ),
         ElevatedButton(onPressed: calculateCattleZakat, child: const Text('Calculate Zakat'))
       ],
     );
   }
+  Widget CropsWidget() {
+
+    return Column(
+
+      children: [
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Column(
+                children: [
+                  SizedBox(height: 10,),
+                  TextField(
+                    decoration: const InputDecoration(
+                        constraints:  BoxConstraints(maxHeight: 30,minHeight:30 ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          gapPadding: 2
+
+                        ),
+                        contentPadding:  EdgeInsets.symmetric(horizontal: 20),
+                        label: Text('Weight (Kg)')),
+                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                    style: const TextStyle(fontSize:20),
+                    controller: input1,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(' '),
+                      FilteringTextInputFormatter.deny('-'),
+                      doubleFormatter
+                    ],
+
+                  ),
+                  SizedBox(height: 10,),
+                  TextField(
+                    decoration: const InputDecoration(
+                        constraints:  BoxConstraints(maxHeight: 30,minHeight:30 ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(32))
+                        ),
+                        contentPadding:  EdgeInsets.symmetric(horizontal: 20),
+                        hintText: 'Price per Kg'),
+                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                    style: const TextStyle(fontSize:20),
+                    controller: input2,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(' '),
+                      FilteringTextInputFormatter.deny('-'),
+                      doubleFormatter
+                    ],
+
+                  ),
+
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(),
+                child: DropdownButton(
+                    underline: const Text(''),
+                    isExpanded: true,
+                    borderRadius: BorderRadius.circular(10),
+                    hint: const Text('Irrigation'),
+                    value: selected,
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'Without cost',
+                        child: Text('Without cost'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'With cost',
+                        child: Text('With cost'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Both methods alike',
+                        child: Text('Both methods alike'),
+                      ),
+
+                    ],
+                    onChanged: (var newValue) {
+                      setState(() {
+                        selected = newValue;
+                      });
+                    }),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () async {
+                  if(input1.text != ''&& input1.text !='.'&&double.parse(input1.text)!=0) {
+                    await DatabaseHelper.instance.addData(
+                      Crops(amount: double.parse(input1.text),type: selected,price: double.parse(input2.text),userId: 1,date: DateTime.now()),
+                    );
+                  }
+                  if(input1.text!=''&&input2.text!=''&&selected!=null) {
+                    setState(() {
+                      input1.text = '';
+                      input2.text = '';
+                      selected=null;
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        const Divider(height: 10),
+        SizedBox(
+            height: MediaQuery.of(context).size.height*sizeRatio,
+            child: DataTable(dataType:'Crops')
+        ),
+      ],
+    );
+  }
+
 
 
   void calculateCattleZakat() async {
@@ -404,128 +537,213 @@ class _DataTypeState extends State<DataType> {
     int cow= 0;
     int camel= 0;
     int sheep= 0;
-    String message = '';
+    String CowMessage1 = '';
+    String CowMessage2 = '';
+    String SheepMessage = '';
+    String CamelMessage1 = '';
+    String CamelMessage2 = '';
+    const String CowHint1 = 'Calf that is one year old.';
+    const String CowHint2 = 'Calf that is already two years old.';
+    const String sheepHint = 'Female sheep that are one year old at least.';
+    const String camelHint1 = 'Female camel that is already one year old.';
+    const String camelHint2 = 'Female camel that is already two years old';
+    const String camelHint3 = 'Female camel that is already three years old.';
+    const String camelHint4 = 'Female camel that is already four years old.';
+    const String nothing = 'Nothing.';
+    List<String> Hints = [];
+
+
+
 
     for (var e in list){
-      if(e.type == 'Cow') {cow+= int.parse(e.amount);
-      } else if(e.type == 'Sheep') {sheep+= int.parse(e.amount);
-      } else if(e.type == 'Camel') {camel+= int.parse(e.amount);
+      if(e.type == 'Cow') {cow+= e.amount as int;
+      } else if(e.type == 'Sheep') {sheep+= e.amount as int;
+      } else if(e.type == 'Camel') {camel+= e.amount as int;
       }
     }
-    message +='Cow Zakat: ';
 
     if(cow<30) {
-      message +=("nothing");
+      CowMessage1 = nothing;
     } else if(cow>=30 && cow<=39) {
-      message +=("tabeea'");
+      CowMessage1 =("1 tabea'.");
+      Hints.add(CowHint1);
     } else if(cow>=40 && cow<=59) {
-      message +=("msnaa");
+      CowMessage1 =("1 msna.");
+      Hints.add(CowHint2);
     } else if(cow>=60 && cow<=69) {
-      message +=("2 tabeea'");
+      CowMessage1 =("2 tabea'.");
+      Hints.add(CowHint1);
     } else if(cow>=70 && cow<=79) {
-      message +=("msnaa and tbeea'");
+      CowMessage1 =("1 msna");
+      Hints.add(CowHint2);
+      CowMessage2 =(" and 1 tbea'.");
+      Hints.add(CowHint1);
+
     } else if(cow>=80 && cow<=89) {
-      message +=("2 msnaa");
+      CowMessage1 =("2 msna.");
+      Hints.add(CowHint2);
     } else if(cow>=90 && cow<=99) {
-      message +=("3 tabeea'");
+      CowMessage1 =("3 tbea'.");
+      Hints.add(CowHint1);
     } else if(cow>=100 && cow<=109) {
-      message +=("msnaa and 2 tbeea'");
+      CowMessage1 =("1 msna");
+      Hints.add(CowHint2);
+      CowMessage2 =(" and 2 tbea'.");
+      Hints.add(CowHint1);
     } else if(cow>=110 && cow<=119) {
-      message +=("2 msnaa and 2 tbeea'");
+      CowMessage1 =("2 msna");
+      Hints.add(CowHint2);
+      CowMessage2 =(" and 2 tbea'.");
+      Hints.add(CowHint1);
     } else if(cow>=120 && cow<=129) {
-      message +=("3 msnaaa or 4 tbeea'");
-    }
-    message +='\nSheep Zakat: ';
-    if(sheep<40) {
-      message +=("nothing");
-    } else if(sheep>=40 && sheep<=120) {
-      message +=("shaah");
-    } else if(sheep>=121 && sheep<=200) {
-      message +=("2 shaaah");
-    } else if(sheep>=201 && sheep<=399) {
-      message +=("3 shah");
-    } else if(sheep>=400 && sheep<=499) {
-      message +=("4 shaah");
-    } else if(sheep>=500 && sheep<=599) {
-      message +=("5 shhah");
-    }
-    message +='\nCamel Zakat: ';
-    if(camel<4) {
-      message +=("nothing");
-    } else if(camel>=5 && camel<=9) {
-      message +=("shaah");
-    } else if(camel>=10 && camel<=14) {
-      message +=("2 shaaah");
-    } else if(camel>=15 && camel<=19) {
-      message +=(" 3 shah");
-    } else if(camel>=20 && camel<=24) {
-      message +=(" 4 shaah");
-    } else if(camel>=25 && camel<=35) {
-      message +=("bnt m5a9");
-    } else if(camel>=36 && camel<=45) {
-      message +=("bnt lboon");
-    } else if(camel>=46 && camel<=60) {
-      message +=("jaqqa");
-    } else if(camel>=61 && camel<=75) {
-      message +=("jth3a");
-    } else if(camel>=76 && camel<=90) {
-      message +=("2 bnt lboon");
-    } else if(camel>=91 && camel<=120) {
-      message +=("2 7qaa");
-    } else if(camel>=121 && camel<=129) {
-      message +=("3 bnt lboon");
-    } else if(camel>=130 && camel<=139) {
-      message +=("7qqa and 2 bnt lboon");
-    } else if(camel>=140 && camel<=149) {
-      message +=("2 7qqa and 2 bnt lboon");
-    } else if(camel>=150 && camel<=159) {
-      message +=("3 7aqqas");
-    } else if(camel>=160 && camel<=169) {
-      message +=("4 bnt lboon");
-    } else if(camel>=170 && camel<=179) {
-      message +=("3 bnt laboon and haqaa");
-    } else if(camel>=180 && camel<=189) {
-      message +=("2 bnt laboon and 2 haqaa");
-    } else if(camel>=190 && camel<=199) {
-      message +=("3 haqqa and 4 bnt laboon");
-    } else if(camel>=200 && camel<=209) {
-      message +=("4 haqqa and 5 bnt laboon");
+      CowMessage1 =("3 msna");
+      CowMessage2 =(" or 4 tbea'.");
+      Hints.add(CowHint2);
+      Hints.add(CowHint1);
     } else {
-      int newX = camel - 209;
-      int newX4 = newX ~/ 40;
-      int newX5 = newX ~/ 50;
-      if (newX4 > newX5) {
-        print("4 haqqa and ${5 + newX4} bnt laboon");
-      } else if (newX5 > newX4) {
-        print("${4 + newX5} haqqa and 5 bnt laboon");
-      } else {
-        print("${4 + newX5} haqqa and 5 bnt laboon");
-      }
+      int temp = cow - 120;
+      int tbea = temp ~/ 30;
+      int msna = temp ~/ 40;
+      CowMessage1 ="${3+msna} msna";
+      CowMessage2 = " or ${4+tbea} tbea'.";
+      Hints.add(CowHint2);
+      Hints.add(CowHint1);
+    }
+    Hints.add(sheepHint);
+    if(sheep<40) {
+      SheepMessage =nothing;
+      Hints.remove(sheepHint);
+    } else if(sheep>=40 && sheep<=120) {
+      SheepMessage =("shah.");
+    } else if(sheep>=121 && sheep<=200) {
+      SheepMessage =("2 shah.");
+    } else if(sheep>=201 && sheep<=399) {
+      SheepMessage =("3 shah.");
+    } else if(sheep>=400 && sheep<=499) {
+      SheepMessage =("4 shah.");
+    } else if(sheep>=500 && sheep<=599) {
+      SheepMessage =("5 shah.");
+    } else {
+      int temp = sheep - 500;
+      int shah = temp ~/ 100;
+      SheepMessage =("${5+shah} shah.");
+    }
+    if(camel<4) {
+      CamelMessage1 =nothing;
+    } else if(camel>=5 && camel<=9) {
+      CamelMessage1 =("1 shah.");
+    } else if(camel>=10 && camel<=14) {
+      CamelMessage1 =("2 shah.");
+    } else if(camel>=15 && camel<=19) {
+      CamelMessage1 =(" 3 shah.");
+    } else if(camel>=20 && camel<=24) {
+      CamelMessage1 =(" 4 shah.");
+    } else if(camel>=25 && camel<=35) {
+      CamelMessage1 =("1 bnt mkhad.");
+      Hints.add(camelHint1);
+    } else if(camel>=36 && camel<=45) {
+      CamelMessage1 =("1 bnt lboon.");
+      Hints.add(camelHint2);
+    } else if(camel>=46 && camel<=60) {
+      CamelMessage1 =("1 haqqa.");
+      Hints.add(camelHint3);
+    } else if(camel>=61 && camel<=75) {
+      CamelMessage1 =("1 jtha'a.");
+      Hints.add(camelHint4);
+    } else if(camel>=76 && camel<=90) {
+      CamelMessage1 =("2 bnt lboon.");
+      Hints.add(camelHint2);
+    } else if(camel>=91 && camel<=120) {
+      CamelMessage1 =("2 haqqa.");
+      Hints.add(camelHint3);
+    } else if(camel>=121 && camel<=129) {
+      CamelMessage1 =("3 bnt lboon.");
+      Hints.add(camelHint2);
+    } else if(camel>=130 && camel<=139) {
+      CamelMessage1 =("2 bnt lboon");
+      CamelMessage2 =(" and 1 haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
+    } else if(camel>=140 && camel<=149) {
+      CamelMessage1 =("1 bnt lboon");
+      CamelMessage2 =(" and 2 haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
+    } else if(camel>=150 && camel<=159) {
+      CamelMessage1 =("3 haqqa.");
+      Hints.add(camelHint3);
+    } else if(camel>=160 && camel<=169) {
+      CamelMessage1 =("4 bnt lboon.");
+      Hints.add(camelHint2);
+    } else if(camel>=170 && camel<=179) {
+      CamelMessage1 =("3 bnt lboon");
+      CamelMessage2 =(" and 1 haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
+    } else if(camel>=180 && camel<=189) {
+      CamelMessage1 =("2 bnt lboon");
+      CamelMessage2 =(" and 2 haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
+    } else if(camel>=190 && camel<=199) {
+      CamelMessage1 =("1 bnt lboon");
+      CamelMessage2 =(" and 3 haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
+    } else if(camel>=200 && camel<=209) {
+      CamelMessage1 =("5 bnt lboon");
+      CamelMessage2 =(" or 4 haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
+    } else {
+      int temp = camel - 200;
+      int bntlaboon = temp ~/ 40;
+      int haqqa = temp ~/ 50;
+      CamelMessage1 =("${5+bntlaboon} bnt lboon");
+      CamelMessage2 =(" or ${4+haqqa} haqqa.");
+      Hints.add(camelHint2);
+      Hints.add(camelHint3);
     }
 
     showDialog(context: context, builder: (context) => AlertDialog(
         title: const Center(child: Text('Cattle Zakat')),
-        content: Text(message),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(children: [Text('Cow : '),CowMessage1 != nothing?Info(message: Hints.removeAt(0), child: Text(CowMessage1)):Text(CowMessage1) , CowMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CowMessage2)):Text(CowMessage2)]),
+            Row(children: [Text('Sheep : '),SheepMessage != nothing ?Info(message: Hints.removeAt(0), child: Text(SheepMessage)):Text(SheepMessage)]),
+            Row(children: [Text('Camel : '),CamelMessage1 != nothing ?Info(message: Hints.removeAt(0), child: Text(CamelMessage1)):Text(CamelMessage1),CamelMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CamelMessage2)):Text(CamelMessage2)]),
+
+        ],),
       actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('ok'))],
     ));
 }
   void calculateMoneyZakat() async {
     String message = '';
+    showDialog(context: context, builder: (context)=>Center(child: holder));
     double total = await AppManager.calcTotalMoney();
     List<String> goldList = await AppManager.get_GoldPriceDubai();
-    double goldPrice = double.parse(goldList[0].substring(0,5));
-    print(goldPrice+total);
-    
-    showDialog(context: context, builder: (context) => AlertDialog(
-      title: const Center(child: Text('Money Zakat')),
-      content: SizedBox(
-        height: 100,
-        child: Column(children: [Text('Total: ${total.toStringAsFixed(2)} $preferredCurrency'),
-          Text('Nisab: ${goldPrice*85} $preferredCurrency'),
-          Text('Zakat: ${total>goldPrice*85 ? (total*0.025).toStringAsFixed(2):'Nothing'}')],),
-      ),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('ok'))],
-    ));
+    if(double.tryParse(goldList[0].substring(0,5)) != null) {
+      double goldPrice = double.parse(goldList[0].substring(0,5));
+      goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
+      //print(goldPrice+total);
+      Navigator.pop(context);
+      showDialog(context: context, builder: (context) => AlertDialog(
+        title: const Center(child: Text('Money Zakat')),
+        content: SizedBox(
+          height: 60,
+          child: Column(children: [Text('Total: ${total.toStringAsFixed(2)} $preferredCurrency'),
+            Text('Nisab: ${(goldPrice*85).toStringAsFixed(2)} $preferredCurrency'),
+            Text('Zakat: ${total>goldPrice*85 ? (total*0.025).toStringAsFixed(2):'Nothing'}')],),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('ok'))],
+      ));
+    }
+    else {
+      Navigator.pop(context);
+      showDialog(context: context, builder: (context) => AlertDialog(content: Text(goldList[0]),));
+    }
+
   }
   @override
   Widget build(BuildContext context) {
@@ -534,7 +752,66 @@ class _DataTypeState extends State<DataType> {
       case 'Gold': return GoldWidget();
       case 'Silver': return SilverWidget();
       case 'Cattle': return CattleWidget();
+      case 'Crops': return CropsWidget();
+      //case 'Stock': return StockWidget();
       default: return Container();
     }
+  }
+}
+
+class DataTable extends StatefulWidget {
+  final String dataType;
+  const DataTable({Key? key,required this.dataType}) : super(key: key);
+
+  @override
+  State<DataTable> createState() => _DataTableState();
+}
+
+class _DataTableState extends State<DataTable> {
+  @override
+  Widget build(BuildContext context) {
+    String dataType = widget.dataType;
+    return FutureBuilder<List<dynamic>>(
+        future: DatabaseHelper.instance.getData(1,dataType),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<dynamic>> snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: Text('Loading...'));
+          }
+          return snapshot.data!.isEmpty
+              ? Center(child: Text('No ${dataType} in List.'))
+              : ListView(
+            physics: const BouncingScrollPhysics(),
+            children: snapshot.data!.map((dataInstance) {
+              return Center(
+                heightFactor: 1,
+                child: Column(
+                  children: [
+                    Row(
+                      children:[
+                        // dataInstance.toMap().forEach((String s,dynamic data) =>Text(data.toString())).toList()
+                        Expanded(flex:3,child: Text(dataInstance.amount.toString())),
+                        Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency :
+                        dataType == 'Cattle' ? dataInstance.type : dataType == 'Crops' ? dataInstance.type : dataInstance.unit)),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            icon: const Icon(Icons.remove),
+                            onPressed: ()  {
+                              setState(() {
+                                DatabaseHelper.instance.removeData(dataInstance);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          );
+        });
   }
 }
