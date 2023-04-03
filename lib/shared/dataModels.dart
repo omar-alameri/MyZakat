@@ -208,7 +208,7 @@ class Stock {
   final int? id;
   final int userId;
   final DateTime date;
-  final double amount;
+  final int amount;
   final String stock;
   final double price;
 

@@ -42,6 +42,7 @@ class AppManager extends ChangeNotifier {
       final titles = html.querySelectorAll("td[data-test='PREV_CLOSE-value']")
           .map((e) => e.innerHtml.trim())
           .toList();
+
       final currency = html.querySelectorAll("div>span").map((e) =>
           e.innerHtml.trim()).toList();
       String Currency = currency[1].toString().substring(currency[1]
@@ -49,9 +50,31 @@ class AppManager extends ChangeNotifier {
           .length - 3, currency[1]
           .toString()
           .length);
-      return [titles.isEmpty ? 'noData':titles[0],Currency];
+      return [titles.isEmpty ? 'no Data found':titles[0],Currency];
     } on Exception catch (e) {
       return ['No Internet connection.',''];
+    }
+  }
+
+  static Future<List<List<String>>> search_StockName(String StockName) async {
+    final url = Uri.parse(
+        'https://finance.yahoo.com/lookup/equity?s=$StockName&t=A&b=0&c=100');
+    try {
+
+      final response = await http.get(url);
+      dom.Document html = dom.Document.html(response.body);
+      final titles = html.querySelectorAll('td[class="data-col0 Ta(start) Pstart(6px) Pend(15px)"] > a[class="Fw(b)"]')
+          .map((e) => e.innerHtml.trim())
+          .toList();
+      final names = html.querySelectorAll('td[class="data-col1 Ta(start) Pstart(10px) Miw(80px)"]')
+          .map((e) => e.innerHtml.trim())
+          .toList();
+      print(titles);
+      print(names);
+
+      return [titles.isEmpty ? ['no Data found']:titles,names];
+    } on Exception catch (e) {
+      return [['No Internet connection.','']];
     }
   }
 
@@ -108,7 +131,7 @@ class AppManager extends ChangeNotifier {
       final titles = html.querySelectorAll("fin-streamer[class='Fw(b) Fz(36px) Mb(-4px) D(ib)']").map((e) => e.innerHtml.trim()).toList();
       double moneyInUsd = money / double.parse(titles[0]);
       print("From ${initial.substring(0, 3)} to USD : ${moneyInUsd.toString()} USD");
-      final url2 = Uri.parse('https://finance.yahoo.com/quote/$finalCurrency?p=$finalCurrency&ncid=yahooproperties_peoplealso_km0o32z3jzm');
+      final url2 = Uri.parse('https://finance.yahoo.com/quote/$finalCurrency?p=$finalCurrency');
       final response2 = await http.get(url2);
       dom.Document html2 = dom.Document.html(response2.body);
       final titles2 = html2.querySelectorAll("fin-streamer[class='Fw(b) Fz(36px) Mb(-4px) D(ib)']").map((e) => e.innerHtml.trim()).toList();
@@ -153,19 +176,19 @@ class Info extends StatelessWidget {
       triggerMode: TooltipTriggerMode.tap,
       padding: const EdgeInsets.all(12),
       decoration:
-      ShapeDecoration(
-        color: Colors.grey.withOpacity(0.9),
-        shape: ShapeOfViewBorder(shape: BubbleShape(
-            position: BubblePosition.Top,
-            arrowPositionPercent: 0.5,
-            borderRadius: 20,
-            arrowHeight: 5,
-            arrowWidth: 5
-        ),),
-      ),
-      // BoxDecoration(
-      //     color: Colors.green.withOpacity(0.9),
-      //     borderRadius: BorderRadius.circular(22)),
+      // ShapeDecoration(
+      //   color: Colors.grey.withOpacity(0.9),
+      //   shape: ShapeOfViewBorder(shape: BubbleShape(
+      //       position: BubblePosition.Top,
+      //       arrowPositionPercent: 0.5,
+      //       borderRadius: 20,
+      //       arrowHeight: 5,
+      //       arrowWidth: 5
+      //   ),),
+      // ),
+      BoxDecoration(
+          color: Colors.grey.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(22)),
       textStyle: const TextStyle(fontSize: 15, color: Colors.white),
       child: Row(children: [child, const Icon(Icons.info_rounded,color: Colors.grey,size: 20)]),
     );

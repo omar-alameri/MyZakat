@@ -33,7 +33,6 @@ class _homePageState extends State<homePage> {
               child: const Text('Start'),
             ),
             Text(stock),
-            //PageView()
             // DropdownSearch<String>(
             //   popupProps: PopupProps.menu(
             //     showSearchBox: true,

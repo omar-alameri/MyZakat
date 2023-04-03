@@ -1,5 +1,6 @@
 
 import 'package:app2/shared/dataModels.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:app2/shared/DataBase.dart';
@@ -17,13 +18,14 @@ class DataType extends StatefulWidget {
 }
 
 class _DataTypeState extends State<DataType> {
-  dynamic selected;
+  dynamic selected ;
   TextEditingController input1 = TextEditingController();
   TextEditingController input2 = TextEditingController();
-
+  TextEditingController input3 = TextEditingController();
+  String stockPrice='';
+  PageController s= PageController() ;
   Widget holder = const CircularProgressIndicator();
   int? selectedId;
-  String? error;
   String preferredCurrency = '';
   List<String> goldRate = [];
   final double sizeRatio = 0.6;
@@ -55,9 +57,8 @@ class _DataTypeState extends State<DataType> {
 
 
                   decoration:  const InputDecoration(
-                    label: Text('Amount'),
-                    labelStyle: TextStyle(color: Colors.green),
-
+                    floatingLabelStyle: TextStyle(color: Colors.green,),
+                    labelText: 'Amount',
                     constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(32)),
@@ -67,7 +68,7 @@ class _DataTypeState extends State<DataType> {
                           borderRadius: BorderRadius.all(Radius.circular(32)),
                           borderSide: BorderSide(color: Colors.grey)
                       ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20,),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                   style: const TextStyle(fontSize:20),
@@ -116,10 +117,6 @@ class _DataTypeState extends State<DataType> {
                     Money(amount: double.parse(input1.text),currency: selected,userId: 1,date: DateTime.now()),
                     );
                     DatabaseHelper.instance.convertRate(selected, preferredCurrency);
-                  }else {
-                    setState(() {
-                      error = null;
-                    });
                   }
                   if(input1.text!=''&&selected!=null) {
                     setState(() {
@@ -158,8 +155,18 @@ class _DataTypeState extends State<DataType> {
               flex: 3,
               child: TextField(
                 decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Weight (Gram)',
+                  floatingLabelStyle: TextStyle(color: Colors.green,),
+                  labelText: 'Weight (Gram)',
+                  constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderSide: BorderSide(color: Colors.green)
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderSide: BorderSide(color: Colors.grey)
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                 style: const TextStyle(fontSize:20),
@@ -249,8 +256,19 @@ class _DataTypeState extends State<DataType> {
               flex: 3,
               child: TextField(
                 decoration: const InputDecoration(
-                    hintText: 'Weight (Gram)',
-                    border: OutlineInputBorder()),
+                  floatingLabelStyle: TextStyle(color: Colors.green,),
+                  labelText: 'Weight (Gram)',
+                  constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderSide: BorderSide(color: Colors.green)
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderSide: BorderSide(color: Colors.grey)
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                ),
                 keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                 style: const TextStyle(fontSize:20),
                 controller: input1,
@@ -341,8 +359,19 @@ class _DataTypeState extends State<DataType> {
               flex: 3,
               child: TextField(
                 decoration: const InputDecoration(
-                    hintText: 'Number',
-                    border: OutlineInputBorder()),
+                  floatingLabelStyle: TextStyle(color: Colors.green,),
+                  labelText: 'Number',
+                  constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderSide: BorderSide(color: Colors.green)
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      borderSide: BorderSide(color: Colors.grey)
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                ),
                 keyboardType: const TextInputType.numberWithOptions(signed: false),
                 style: const TextStyle(fontSize:20),
                 controller: input1,
@@ -423,17 +452,22 @@ class _DataTypeState extends State<DataType> {
               flex: 3,
               child: Column(
                 children: [
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   TextField(
                     decoration: const InputDecoration(
-                        constraints:  BoxConstraints(maxHeight: 30,minHeight:30 ),
-                        border: OutlineInputBorder(
+                      floatingLabelStyle: TextStyle(color: Colors.green,),
+                      labelText: 'Weight (Kg)',
+                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                      focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(32)),
-                          gapPadding: 2
-
-                        ),
-                        contentPadding:  EdgeInsets.symmetric(horizontal: 20),
-                        label: Text('Weight (Kg)')),
+                          borderSide: BorderSide(color: Colors.green)
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.grey)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                    ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
                     controller: input1,
@@ -444,15 +478,22 @@ class _DataTypeState extends State<DataType> {
                     ],
 
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   TextField(
                     decoration: const InputDecoration(
-                        constraints:  BoxConstraints(maxHeight: 30,minHeight:30 ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(32))
-                        ),
-                        contentPadding:  EdgeInsets.symmetric(horizontal: 20),
-                        hintText: 'Price per Kg'),
+                      floatingLabelStyle: TextStyle(color: Colors.green,),
+                      labelText: 'Price per Kg',
+                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.green)
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.grey)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                    ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
                     controller: input2,
@@ -470,7 +511,7 @@ class _DataTypeState extends State<DataType> {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.symmetric(),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: DropdownButton(
                     underline: const Text(''),
                     isExpanded: true,
@@ -529,7 +570,212 @@ class _DataTypeState extends State<DataType> {
       ],
     );
   }
+  Widget StockWidget() {
 
+    return Column(
+
+      children: [
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Column(
+                children: [
+                  const SizedBox(height: 5,),
+                  DropdownSearch<String>(
+                    onBeforePopupOpening: (x) async{
+                      if(selected == null || selected == '') {
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    },
+                    onChanged: (s){
+                      input1.text = s?.substring(0,s.indexOf(' '))??'';
+                      AppManager.get_StockPrice(input1.text).then((value) {
+                        if(double.tryParse(value[0]) != null) {
+                          DatabaseHelper.instance.convertRate(value[1], preferredCurrency).then((rate) {
+                            setState(() {
+                              input3.text = (double.parse(value[0])*rate).toStringAsFixed(2);
+                            });
+                          });
+
+                        }else {
+                           var snackBar = SnackBar(
+                            content: Text('Price not founded. Please enter it in $preferredCurrency'),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      });
+                    },
+                    asyncItems: (x) async{
+                      var s = await AppManager.search_StockName(selected);
+                      List<String> list =[];
+                      for(int i=0;i<s.first.length;i++){
+                        list.add('${s.first[i]} (${s.last[i]})');
+                      }
+                      return list;
+                    },
+                    dropdownBuilder: (context,s){
+                      return TextField(
+                        smartDashesType: SmartDashesType.disabled,
+                        style: const TextStyle(fontSize:20),
+
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          hintText: 'Search',
+                        ),
+                        controller: input1,
+                        onChanged: (s){
+                          selected = input1.text;
+                        },
+                      );
+                    },
+                    selectedItem: selected,
+                    dropdownButtonProps: const DropdownButtonProps(
+                      icon: Icon(Icons.search),
+                      padding: EdgeInsets.symmetric(vertical: 4)
+                    ),
+
+                    dropdownDecoratorProps: const DropDownDecoratorProps(
+                      baseStyle: TextStyle(fontSize:20),
+                      dropdownSearchDecoration: InputDecoration(
+                        floatingLabelStyle: TextStyle(color: Colors.green,),
+                        labelText: 'Name',
+                        constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(32)),
+                            borderSide: BorderSide(color: Colors.green)
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(32)),
+                            borderSide: BorderSide(color: Colors.grey)
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                      ),
+                    ),
+
+
+                  ),
+                  const SizedBox(height: 10,),
+                  TextField(
+                    decoration: const InputDecoration(
+                      floatingLabelStyle: TextStyle(color: Colors.green,),
+                      labelText: 'Quantity',
+                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.green)
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.grey)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                    style: const TextStyle(fontSize:20),
+                    controller: input2,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+
+                  ),
+                  const SizedBox(height: 10,),
+                  TextField(
+
+                    decoration:  const InputDecoration(
+                      floatingLabelStyle: TextStyle(color: Colors.green,),
+                      labelText: 'Price',
+                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.green)
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.grey)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                    style: const TextStyle(fontSize:20),
+                    controller: input3,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.deny(' '),
+                      FilteringTextInputFormatter.deny('-'),
+                      doubleFormatter
+                    ],
+
+                  ),
+
+                ],
+              ),
+            ),
+            // Expanded(
+            //   flex: 2,
+            //   child: Padding(
+            //     padding: const EdgeInsets.symmetric(),
+            //     child: DropdownButton(
+            //         underline: const Text(''),
+            //         isExpanded: true,
+            //         borderRadius: BorderRadius.circular(10),
+            //         hint: const Text('Irrigation'),
+            //         value: selected,
+            //         items: const [
+            //           DropdownMenuItem(
+            //             value: 'Without cost',
+            //             child: Text('Without cost'),
+            //           ),
+            //           DropdownMenuItem(
+            //             value: 'With cost',
+            //             child: Text('With cost'),
+            //           ),
+            //           DropdownMenuItem(
+            //             value: 'Both methods alike',
+            //             child: Text('Both methods alike'),
+            //           ),
+            //
+            //         ],
+            //         onChanged: (var newValue) {
+            //           setState(() {
+            //             selected = newValue;
+            //           });
+            //         }),
+            //   ),
+            // ),
+            Expanded(
+              flex: 1,
+              child: IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () async {
+                  if(input2.text != ''&& input2.text !='.'&&double.parse(input2.text)!=0) {
+                    await DatabaseHelper.instance.addData(
+                      Stock(amount: int.parse(input2.text),stock: input1.text,price: double.parse(input3.text),userId: 1,date: DateTime.now()),
+                    );
+                  }
+                  if(input1.text!=''&&input2.text!=''&&input3.text!='') {
+                    setState(() {
+                      input1.text = '';
+                      input2.text = '';
+                      input3.text = '';
+                      selected=null;
+                    });
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        const Divider(height: 10),
+        SizedBox(
+            height: MediaQuery.of(context).size.height*sizeRatio,
+            child: DataTable(dataType:'Stock')
+        ),
+      ],
+    );
+  }
 
 
   void calculateCattleZakat() async {
@@ -710,9 +956,9 @@ class _DataTypeState extends State<DataType> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(children: [Text('Cow : '),CowMessage1 != nothing?Info(message: Hints.removeAt(0), child: Text(CowMessage1)):Text(CowMessage1) , CowMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CowMessage2)):Text(CowMessage2)]),
-            Row(children: [Text('Sheep : '),SheepMessage != nothing ?Info(message: Hints.removeAt(0), child: Text(SheepMessage)):Text(SheepMessage)]),
-            Row(children: [Text('Camel : '),CamelMessage1 != nothing ?Info(message: Hints.removeAt(0), child: Text(CamelMessage1)):Text(CamelMessage1),CamelMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CamelMessage2)):Text(CamelMessage2)]),
+            Row(children: [const Text('Cow : '),CowMessage1 != nothing?Info(message: Hints.removeAt(0), child: Text(CowMessage1)):Text(CowMessage1) , CowMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CowMessage2)):Text(CowMessage2)]),
+            Row(children: [const Text('Sheep : '),SheepMessage != nothing ?Info(message: Hints.removeAt(0), child: Text(SheepMessage)):Text(SheepMessage)]),
+            Row(children: [const Text('Camel : '),CamelMessage1 != nothing ?Info(message: Hints.removeAt(0), child: Text(CamelMessage1)):Text(CamelMessage1),CamelMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CamelMessage2)):Text(CamelMessage2)]),
 
         ],),
       actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('ok'))],
@@ -753,8 +999,8 @@ class _DataTypeState extends State<DataType> {
       case 'Silver': return SilverWidget();
       case 'Cattle': return CattleWidget();
       case 'Crops': return CropsWidget();
-      //case 'Stock': return StockWidget();
-      default: return Container();
+      case 'Stock': return StockWidget();
+      default: return const Text('N/A');
     }
   }
 }
@@ -779,7 +1025,7 @@ class _DataTableState extends State<DataTable> {
             return const Center(child: Text('Loading...'));
           }
           return snapshot.data!.isEmpty
-              ? Center(child: Text('No ${dataType} in List.'))
+              ? Center(child: Text('No $dataType in List.'))
               : ListView(
             physics: const BouncingScrollPhysics(),
             children: snapshot.data!.map((dataInstance) {
@@ -790,9 +1036,10 @@ class _DataTableState extends State<DataTable> {
                     Row(
                       children:[
                         // dataInstance.toMap().forEach((String s,dynamic data) =>Text(data.toString())).toList()
-                        Expanded(flex:3,child: Text(dataInstance.amount.toString())),
-                        Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency :
-                        dataType == 'Cattle' ? dataInstance.type : dataType == 'Crops' ? dataInstance.type : dataInstance.unit)),
+                        Expanded(flex:3,child: Text(dataType == 'Stock'? dataInstance.stock :dataInstance.amount.toString())),
+                        Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency : dataType == 'Cattle' ? dataInstance.type :
+                        dataType == 'Crops' ? dataInstance.type : dataType == 'Stock' ? dataInstance.amount.toString() :dataInstance.unit)),
+                        dataType == 'Stock' ? Expanded(child: Text(dataInstance.price.toString())): const Text(''),
                         Expanded(
                           flex: 1,
                           child: IconButton(

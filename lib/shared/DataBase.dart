@@ -88,7 +88,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE Stock(
           $id,
-          amount $double,
+          amount $int,
           price $double,
           stock $string,
           userId $int,
@@ -111,6 +111,8 @@ class DatabaseHelper {
         return data.isNotEmpty ? data.map((c) => Cattle.fromMap(c)).toList() : [];
       case 'Crops':
         return data.isNotEmpty ? data.map((c) => Crops.fromMap(c)).toList() : [];
+      case 'Stock':
+        return data.isNotEmpty ? data.map((c) => Stock.fromMap(c)).toList() : [];
       default : return [];
     }
   } catch(e){return[];}
@@ -128,25 +130,36 @@ class DatabaseHelper {
     return await db.update(data.runtimeType.toString(), data.toMap(), where: 'id = ?', whereArgs: [data.id]);
   }
   Future<double> convertRate(String Initial, String Final) async {
+    if (Initial==Final) return 1.0;
     double rate;
+    bool reversed = false;
     Database db = await instance.database;
-    //await db.rawDelete("delete from Currency where id=id");
+    // await db.rawDelete("delete from Currency where id=id");
     var data = await db.query('Currency', where: 'initial = ? AND final = ?', whereArgs: [Initial,Final],orderBy: 'date');
     if (data.isEmpty) {
-      // print('nodata');
-      rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
-      if(rate !=-1) {
-        await db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
+      data = await db.query('Currency', where: 'initial = ? AND final = ?', whereArgs: [Final,Initial],orderBy: 'date');
+      if (data.isEmpty) {
+         // print('nodata');
+        rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
+        if (rate != -1) {
+          db.insert('Currency', {
+            'initial': Initial,
+            'final': Final,
+            'rate': rate,
+            'date': DateTime.now().toIso8601String()
+          });
+        }
+        return rate;
+      } else {reversed = true;
       }
-      return rate;
-    } else {
+    }
       DateTime d = DateTime.parse(data.last['date'] as String);
       //print(d.toString()+DateTime.now().toString());
-      if(DateTime.now().minute - d.minute > 10 ) {
-        // print('outdated');
+      if(DateTime.now().minute - d.minute > 2 ) {
+        print('outdated');
         rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
         if(rate !=-1) {
-          await db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
+          db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
           return rate;
         } else{
           rate = data.last['rate'] as double;
@@ -156,8 +169,9 @@ class DatabaseHelper {
       } else {
         // print('up to date');
         rate = data.last['rate'] as double;
+        if (reversed) rate = 1.0/rate;
         return rate;
       }
-    }
+
   }
 }
