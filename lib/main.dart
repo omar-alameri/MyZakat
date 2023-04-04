@@ -44,8 +44,22 @@ class _MyappState extends State<Myapp> {
   Widget build(BuildContext context) {
 
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle: TextStyle(color: Colors.green,),
+          constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32)),
+              borderSide: BorderSide(color: Colors.green)
+          ),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32)),
+              borderSide: BorderSide(color: Colors.grey)
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+        ),
         elevatedButtonTheme: const ElevatedButtonThemeData(
           style: ButtonStyle(
             backgroundColor: MaterialStatePropertyAll<Color>(Colors.green),

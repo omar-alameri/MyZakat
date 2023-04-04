@@ -60,18 +60,7 @@ class _DataTypeState extends State<DataType> {
 
 
                   decoration:  const InputDecoration(
-                    floatingLabelStyle: TextStyle(color: Colors.green,),
                     labelText: 'Amount',
-                    constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(32)),
-                        borderSide: BorderSide(color: Colors.green)
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                   style: const TextStyle(fontSize:20),
@@ -97,26 +86,40 @@ class _DataTypeState extends State<DataType> {
                   },
                   asyncItems: (x) async{
                     var s = await AppManager.search_Currency(selected);
-                    List<String> list =[];
-                    for(int i=0;i<s.first.length;i++){
-                      list.add('${s.first[i]} (${s.last[i]})');
-                    }
-                    return list;
+
+                    return s;
+                  },
+                  onChanged: (s){
+                    setState(() {
+                      input2.text = s??'';
+                      selected = s??'';
+                    });
                   },
                   dropdownBuilder: (context,s){
                     return TextField(
-                      smartDashesType: SmartDashesType.disabled,
-                      style: const TextStyle(fontSize:20),
 
+                      style: const TextStyle(
+                        fontSize:20,
+                      ),
                       decoration: const InputDecoration(
-                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
                         isCollapsed: true,
-                        hintText: 'Search',
                       ),
                       controller: input2,
                       onChanged: (s){
                         selected = input2.text;
                       },
+                      inputFormatters: [
+                        TextInputFormatter.withFunction((oldValue, newValue)
+                        {
+                          if(newValue.text.length <4) {
+                            return TextEditingValue(text:newValue.text.toUpperCase(),selection: newValue.selection);
+                          }
+                          return oldValue;
+                        })
+                      ],
                     );
                   },
                   selectedItem: selected,
@@ -128,18 +131,7 @@ class _DataTypeState extends State<DataType> {
                   dropdownDecoratorProps: const DropDownDecoratorProps(
                     baseStyle: TextStyle(fontSize:20),
                     dropdownSearchDecoration: InputDecoration(
-                      floatingLabelStyle: TextStyle(color: Colors.green,),
-                      labelText: 'Name',
-                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.green)
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                      labelText: 'Currency',
                     ),
                   ),
 
@@ -182,6 +174,8 @@ class _DataTypeState extends State<DataType> {
                   if(input1.text!=''&&selected!=null) {
                     setState(() {
                       input1.text = '';
+                      input2.text = '';
+                      selected = '';
                     });
                   }
                 },
@@ -218,16 +212,6 @@ class _DataTypeState extends State<DataType> {
                 decoration: const InputDecoration(
                   floatingLabelStyle: TextStyle(color: Colors.green,),
                   labelText: 'Weight (Gram)',
-                  constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      borderSide: BorderSide(color: Colors.green)
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      borderSide: BorderSide(color: Colors.grey)
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                 style: const TextStyle(fontSize:20),
@@ -288,6 +272,7 @@ class _DataTypeState extends State<DataType> {
                   if(input1.text!=''&&selected!=null) {
                     setState(() {
                       input1.text = '';
+                      selected = null;
                     });
                   }
                 },
@@ -317,18 +302,7 @@ class _DataTypeState extends State<DataType> {
               flex: 3,
               child: TextField(
                 decoration: const InputDecoration(
-                  floatingLabelStyle: TextStyle(color: Colors.green,),
                   labelText: 'Weight (Gram)',
-                  constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      borderSide: BorderSide(color: Colors.green)
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      borderSide: BorderSide(color: Colors.grey)
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                 style: const TextStyle(fontSize:20),
@@ -393,6 +367,7 @@ class _DataTypeState extends State<DataType> {
                   if(input1.text!=''&&selected!=null) {
                     setState(() {
                       input1.text = '';
+                      selected = null;
                     });
                   }
                 },
@@ -420,18 +395,7 @@ class _DataTypeState extends State<DataType> {
               flex: 3,
               child: TextField(
                 decoration: const InputDecoration(
-                  floatingLabelStyle: TextStyle(color: Colors.green,),
                   labelText: 'Number',
-                  constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      borderSide: BorderSide(color: Colors.green)
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(32)),
-                      borderSide: BorderSide(color: Colors.grey)
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(signed: false),
                 style: const TextStyle(fontSize:20),
@@ -485,6 +449,7 @@ class _DataTypeState extends State<DataType> {
                   if(input1.text!=''&&selected!=null) {
                     setState(() {
                       input1.text = '';
+                      selected = null;
                     });
                   }
                 },
@@ -516,18 +481,7 @@ class _DataTypeState extends State<DataType> {
                   const SizedBox(height: 10,),
                   TextField(
                     decoration: const InputDecoration(
-                      floatingLabelStyle: TextStyle(color: Colors.green,),
                       labelText: 'Weight (Kg)',
-                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.green)
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
@@ -542,18 +496,7 @@ class _DataTypeState extends State<DataType> {
                   const SizedBox(height: 10,),
                   TextField(
                     decoration: const InputDecoration(
-                      floatingLabelStyle: TextStyle(color: Colors.green,),
                       labelText: 'Price per Kg',
-                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.green)
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
@@ -679,11 +622,11 @@ class _DataTypeState extends State<DataType> {
                     },
                     dropdownBuilder: (context,s){
                       return TextField(
-                        smartDashesType: SmartDashesType.disabled,
                         style: const TextStyle(fontSize:20),
-
                         decoration: const InputDecoration(
-                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
                           isCollapsed: true,
                           hintText: 'Search',
                         ),
@@ -702,18 +645,7 @@ class _DataTypeState extends State<DataType> {
                     dropdownDecoratorProps: const DropDownDecoratorProps(
                       baseStyle: TextStyle(fontSize:20),
                       dropdownSearchDecoration: InputDecoration(
-                        floatingLabelStyle: TextStyle(color: Colors.green,),
                         labelText: 'Name',
-                        constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(32)),
-                            borderSide: BorderSide(color: Colors.green)
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(32)),
-                            borderSide: BorderSide(color: Colors.grey)
-                        ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
                       ),
                     ),
 
@@ -722,18 +654,7 @@ class _DataTypeState extends State<DataType> {
                   const SizedBox(height: 10,),
                   TextField(
                     decoration: const InputDecoration(
-                      floatingLabelStyle: TextStyle(color: Colors.green,),
                       labelText: 'Quantity',
-                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.green)
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
@@ -747,18 +668,7 @@ class _DataTypeState extends State<DataType> {
                   TextField(
 
                     decoration:  const InputDecoration(
-                      floatingLabelStyle: TextStyle(color: Colors.green,),
                       labelText: 'Price',
-                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.green)
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
                     ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
@@ -1011,7 +921,6 @@ class _DataTypeState extends State<DataType> {
       Hints.add(camelHint2);
       Hints.add(camelHint3);
     }
-
     showDialog(context: context, builder: (context) => AlertDialog(
         title: const Center(child: Text('Cattle Zakat')),
         content: Column(
@@ -1026,14 +935,13 @@ class _DataTypeState extends State<DataType> {
     ));
 }
   void calculateMoneyZakat() async {
-    String message = '';
+    // String message = '';
     showDialog(context: context, builder: (context)=>Center(child: holder));
     double total = await AppManager.calcTotalMoney();
     List<String> goldList = await AppManager.get_GoldPriceDubai();
     if(double.tryParse(goldList[0].substring(0,5)) != null) {
       double goldPrice = double.parse(goldList[0].substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
-      //print(goldPrice+total);
       Navigator.pop(context);
       showDialog(context: context, builder: (context) => AlertDialog(
         title: const Center(child: Text('Money Zakat')),

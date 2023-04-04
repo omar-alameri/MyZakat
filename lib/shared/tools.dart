@@ -80,7 +80,7 @@ class AppManager extends ChangeNotifier {
     }
   }
 
-  static Future<List<List<String>>> search_Currency(String Currency) async {
+  static Future<List<String>> search_Currency(String Currency) async {
     final url = Uri.parse(
         'https://finance.yahoo.com/lookup/currency?s=usd$Currency&t=A&b=0&c=100');
     try {
@@ -88,17 +88,13 @@ class AppManager extends ChangeNotifier {
       final response = await http.get(url);
       dom.Document html = dom.Document.html(response.body);
       final titles = html.querySelectorAll('td[class="data-col0 Ta(start) Pstart(6px) Pend(15px)"] > a[class="Fw(b)"]')
-          .map((e) => e.innerHtml.trim())
-          .toList();
-      final names = html.querySelectorAll('td[class="data-col1 Ta(start) Pstart(10px) Miw(80px)"]')
-          .map((e) => e.innerHtml.trim())
+          .map((e) => e.innerHtml.trim().substring(0,3))
           .toList();
       print(titles);
-      print(names);
 
-      return [titles.isEmpty ? ['no Data found']:titles,names];
+      return titles.isEmpty ? ['no Data found']:titles;
     } on Exception catch (e) {
-      return [['No Internet connection.','']];
+      return ['No Internet connection.'];
     }
   }
 

@@ -104,7 +104,6 @@ class _DataPageState extends State<DataPage> {
                 ],
               ),
               ListView.builder(
-                primary: true,
                 key: Key('builder ${selectedId.toString()}'), //attention
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
