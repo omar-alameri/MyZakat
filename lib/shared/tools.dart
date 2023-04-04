@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
-import 'package:shape_of_view_null_safe/shape_of_view_null_safe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 import 'DataBase.dart';
 
 class AppManager extends ChangeNotifier {
@@ -59,6 +57,28 @@ class AppManager extends ChangeNotifier {
   static Future<List<List<String>>> search_StockName(String StockName) async {
     final url = Uri.parse(
         'https://finance.yahoo.com/lookup/equity?s=$StockName&t=A&b=0&c=100');
+    try {
+
+      final response = await http.get(url);
+      dom.Document html = dom.Document.html(response.body);
+      final titles = html.querySelectorAll('td[class="data-col0 Ta(start) Pstart(6px) Pend(15px)"] > a[class="Fw(b)"]')
+          .map((e) => e.innerHtml.trim())
+          .toList();
+      final names = html.querySelectorAll('td[class="data-col1 Ta(start) Pstart(10px) Miw(80px)"]')
+          .map((e) => e.innerHtml.trim())
+          .toList();
+      print(titles);
+      print(names);
+
+      return [titles.isEmpty ? ['no Data found']:titles,names];
+    } on Exception catch (e) {
+      return [['No Internet connection.','']];
+    }
+  }
+
+  static Future<List<List<String>>> search_Currency(String Currency) async {
+    final url = Uri.parse(
+        'https://finance.yahoo.com/lookup/currency?s=usd$Currency&t=A&b=0&c=100');
     try {
 
       final response = await http.get(url);

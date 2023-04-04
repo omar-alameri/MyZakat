@@ -1,3 +1,5 @@
+import 'package:app2/firebase_options.dart';
+import 'package:app2/pages/LoginPage.dart';
 import 'package:app2/pages/dataPage.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/pages/languagePage.dart';
@@ -5,10 +7,14 @@ import 'package:app2/pages/schoolPage.dart';
 import 'package:app2/pages/homePage.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
- runApp(
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
   ChangeNotifierProvider(
       create: (_) => AppManager(),
       child: const Myapp(),
@@ -64,7 +70,8 @@ class _MyappState extends State<Myapp> {
       themeMode: Provider.of<AppManager>(context).thememode,
       //initialRoute: '/language',
       routes: {
-        '/': (context) => const homePage(),
+        '/': (context) => const LoginPage(),
+        '/home': (context) => const homePage(),
         '/language': (context) => const LanguagePage(),
         '/school': (context) => const schoolPage(),
         '/data': (context) => const DataPage(),

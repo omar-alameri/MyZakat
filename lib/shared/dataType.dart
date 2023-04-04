@@ -23,7 +23,6 @@ class _DataTypeState extends State<DataType> {
   TextEditingController input2 = TextEditingController();
   TextEditingController input3 = TextEditingController();
   String stockPrice='';
-  PageController s= PageController() ;
   Widget holder = const CircularProgressIndicator();
   int? selectedId;
   String preferredCurrency = '';
@@ -84,27 +83,85 @@ class _DataTypeState extends State<DataType> {
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
-                child: DropdownButton(
-                    underline: const Text(''),
-                    isExpanded: true,
-                    borderRadius: BorderRadius.circular(5),
-                    hint: const Text('Currency'),
-                    value: selected,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'AED',
-                        child: Text('AED'),
+                child: DropdownSearch<String>(
+                  onBeforePopupOpening: (x) async{
+                    if(selected == null || selected == '') {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  },
+                  asyncItems: (x) async{
+                    var s = await AppManager.search_Currency(selected);
+                    List<String> list =[];
+                    for(int i=0;i<s.first.length;i++){
+                      list.add('${s.first[i]} (${s.last[i]})');
+                    }
+                    return list;
+                  },
+                  dropdownBuilder: (context,s){
+                    return TextField(
+                      smartDashesType: SmartDashesType.disabled,
+                      style: const TextStyle(fontSize:20),
+
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                        hintText: 'Search',
                       ),
-                      DropdownMenuItem(
-                        value: 'USD',
-                        child: Text('USD'),
+                      controller: input2,
+                      onChanged: (s){
+                        selected = input2.text;
+                      },
+                    );
+                  },
+                  selectedItem: selected,
+                  dropdownButtonProps: const DropdownButtonProps(
+                      icon: Icon(Icons.search),
+                      padding: EdgeInsets.symmetric(vertical: 4)
+                  ),
+
+                  dropdownDecoratorProps: const DropDownDecoratorProps(
+                    baseStyle: TextStyle(fontSize:20),
+                    dropdownSearchDecoration: InputDecoration(
+                      floatingLabelStyle: TextStyle(color: Colors.green,),
+                      labelText: 'Name',
+                      constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.green)
                       ),
-                    ],
-                    onChanged: (var newValue) {
-                      setState(() {
-                        selected = newValue;
-                      });
-                    }),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          borderSide: BorderSide(color: Colors.grey)
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                    ),
+                  ),
+
+
+                ),
+                // DropdownButton(
+                //     underline: const Text(''),
+                //     isExpanded: true,
+                //     borderRadius: BorderRadius.circular(5),
+                //     hint: const Text('Currency'),
+                //     value: selected,
+                //     items: const [
+                //       DropdownMenuItem(
+                //         value: 'AED',
+                //         child: Text('AED'),
+                //       ),
+                //       DropdownMenuItem(
+                //         value: 'USD',
+                //         child: Text('USD'),
+                //       ),
+                //     ],
+                //     onChanged: (var newValue) {
+                //       setState(() {
+                //         selected = newValue;
+                //       });
+                //     }),
               ),
             ),
             Expanded(
