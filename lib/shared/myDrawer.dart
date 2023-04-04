@@ -1,3 +1,4 @@
+import 'package:app2/pages/LoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:provider/provider.dart';
@@ -111,6 +112,13 @@ class _myDrawerState extends State<myDrawer> {
 
                       });
                     }),
+                ElevatedButton(onPressed: (){
+                  AppManager.removePref('userEmail');
+                  AppManager.removePref('School');
+                  AppManager.removePref('Language');
+                  signOut();
+                  Navigator.pushNamedAndRemoveUntil(context, '/',(route) =>false);
+                }, child: const Text('SignOut'),)
               ],
         )));
   }

@@ -25,11 +25,14 @@ class _DataPageState extends State<DataPage> {
   dynamic selected;
   int? selectedId;
   ScrollController scroll = ScrollController();
+  String userEmail = '';
 
   @override
   void didChangeDependencies() {
+    AppManager.readPref('userEmail').then((value)
+    {userEmail = value;
     for (String s in items) {
-      DatabaseHelper.instance.getData(1, s).then((value) {
+      DatabaseHelper.instance.getData(userEmail, s).then((value) {
         if (items.contains(s) && value.isNotEmpty) {
           setState(() {
             activeItems.add(s);
@@ -38,6 +41,8 @@ class _DataPageState extends State<DataPage> {
         }
       });
     }
+    });
+
     AppManager.readPref('pCurrency').then((value) {
       if (value == null) AppManager.savePref('pCurrency', 'USD');
     });

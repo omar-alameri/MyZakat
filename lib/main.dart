@@ -1,5 +1,6 @@
 import 'package:app2/firebase_options.dart';
 import 'package:app2/pages/LoginPage.dart';
+import 'package:app2/pages/SignUpPage.dart';
 import 'package:app2/pages/dataPage.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/pages/languagePage.dart';
@@ -71,6 +72,7 @@ class _MyappState extends State<Myapp> {
       //initialRoute: '/language',
       routes: {
         '/': (context) => const LoginPage(),
+        '/signup': (context) => const SignUpPage(),
         '/home': (context) => const homePage(),
         '/language': (context) => const LanguagePage(),
         '/school': (context) => const schoolPage(),

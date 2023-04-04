@@ -30,6 +30,10 @@ class AppManager extends ChangeNotifier {
 
     return prefs.get(key);
   }
+  static Future removePref(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.remove(key);
+  }
 
   static Future get_StockPrice(String StockName) async {
     final url = Uri.parse(
@@ -167,7 +171,8 @@ class AppManager extends ChangeNotifier {
   static Future<double> calcTotalMoney() async {
     double total = 0.0;
     String goalCurrency = await readPref('pCurrency');
-    List<dynamic> list = await DatabaseHelper.instance.getData(1,'Money');
+    String userEmail = await readPref('userEmail');
+    List<dynamic> list = await DatabaseHelper.instance.getData(userEmail,'Money');
     for (var money in list){
       total +=  await DatabaseHelper.instance.convertRate(money.currency,goalCurrency)*money.amount;
     }

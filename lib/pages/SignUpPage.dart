@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/FireStoreFunctions.dart';
-import 'package:app2/pages//LoginPage.dart';
+import 'package:app2/pages/LoginPage.dart';
 
 class SignUpPage extends StatefulWidget{
+  const SignUpPage({super.key});
+
 
   @override
   _SignUpPage createState() => _SignUpPage();
@@ -30,12 +32,10 @@ class _SignUpPage extends State<SignUpPage>{
             children: [
               SizedBox(height: 235),
               TextField(
-                autocorrect: false,
-                enableSuggestions: false,
                 controller: SignUpemailController,
                 cursorColor: Colors.blueGrey,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: "Enter Email"),
+                decoration: InputDecoration(labelText: "Enter Email"),
               ),
               SizedBox(height: 4),
               TextField(
@@ -57,9 +57,9 @@ class _SignUpPage extends State<SignUpPage>{
                   style: TextStyle(fontSize: 24),
                 ),
                 onPressed: () async{
+                  await signUp(SignUpemailController.text.trim(),SignUppasswordController.text.trim(), context);
                   await get_UserInfo();
                     if(EmailValidator.validate(SignUpemailController.text.trim()) && !email_Used(SignUpemailController.text.trim())){
-                      await signUp(SignUpemailController.text.trim(),SignUppasswordController.text.trim(), context);
                       await Add_Email_To_Database(SignUpemailController.text.trim());
                       await get_UserInfo();
                       await signIn(SignUpemailController.text.trim(),SignUppasswordController.text.trim());
@@ -69,8 +69,11 @@ class _SignUpPage extends State<SignUpPage>{
                       VerifyTimer = Timer.periodic(Duration(seconds: 2), (timer) {User_Verified();});
 
                     }
-                    else
+                    else{
                       print("Email invalid format or The Email is already used for another account");
+                      delete_User(SignUpemailController.text.trim());
+                    }
+
                 },
               ),
               SizedBox(height: 20),
@@ -109,7 +112,7 @@ class _SignUpPage extends State<SignUpPage>{
 
     // print(FirebaseAuth.instance.currentUser?.emailVerified);
     if(FirebaseAuth.instance.currentUser?.emailVerified == true){
-      print("UserVerified!");
+      print("User Verified!");
       await signOut();
       DeleteAccountTimer.cancel();
       VerifyTimer.cancel();
@@ -132,9 +135,10 @@ class _SignUpPage extends State<SignUpPage>{
 Future delete_User(String Email) async{
   DeleteAccountTimer.cancel();
   VerifyTimer.cancel();
+  Delete_User_Info(Email);
   await FirebaseAuth.instance.currentUser?.delete();
   await signOut();
   print("Email verification link has expired. Please sign up again");
-  Delete_User_Info(Email);
+
 
 }

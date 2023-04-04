@@ -26,6 +26,8 @@ class _DataTypeState extends State<DataType> {
   Widget holder = const CircularProgressIndicator();
   int? selectedId;
   String preferredCurrency = '';
+  String userEmail = '';
+
   List<String> goldRate = [];
   final double sizeRatio = 0.6;
   TextInputFormatter doubleFormatter = TextInputFormatter.withFunction((oldValue, newValue)
@@ -43,6 +45,8 @@ class _DataTypeState extends State<DataType> {
     super.didChangeDependencies();
     AppManager.readPref('pCurrency').then((value)
          {setState(() {preferredCurrency = value;});});
+    AppManager.readPref('userEmail').then((value)
+    {setState(() {userEmail = value;});});
   }
 
   Widget MoneyWidget() {
@@ -171,7 +175,7 @@ class _DataTypeState extends State<DataType> {
                 onPressed: ()  {
                   if(input1.text != ''&& input1.text != '.'&& double.parse(input1.text)!=0&&selected!=null) {
                     DatabaseHelper.instance.addData(
-                    Money(amount: double.parse(input1.text),currency: selected,userId: 1,date: DateTime.now()),
+                    Money(amount: double.parse(input1.text),currency: selected,userEmail: userEmail,date: DateTime.now()),
                     );
                     DatabaseHelper.instance.convertRate(selected, preferredCurrency);
                   }
@@ -188,7 +192,7 @@ class _DataTypeState extends State<DataType> {
         const Divider(height: 10),
         SizedBox(
              height: MediaQuery.of(context).size.height*sizeRatio,
-          child:  DataTable(dataType: 'Money')
+          child:  DataTable(dataType: 'Money',userEmail: userEmail,)
         ),
         const Divider(height: 10, color: Colors.green,),
         ElevatedButton(onPressed: calculateMoneyZakat, child: const Text('Calculate Zakat')),
@@ -278,7 +282,7 @@ class _DataTypeState extends State<DataType> {
                 onPressed: () async {
                   if(input1.text != ''&& input1.text !='.'&&double.parse(input1.text)!=0) {
                     await DatabaseHelper.instance.addData(
-                      Gold(amount: double.parse(input1.text),unit: selected,userId: 1,date: DateTime.now()),
+                      Gold(amount: double.parse(input1.text),unit: selected,userEmail: userEmail,date: DateTime.now()),
                     );
                   }
                   if(input1.text!=''&&selected!=null) {
@@ -295,7 +299,7 @@ class _DataTypeState extends State<DataType> {
 
         SizedBox(
           height: MediaQuery.of(context).size.height*sizeRatio,
-          child: DataTable(dataType: 'Gold')
+          child: DataTable(dataType: 'Gold',userEmail: userEmail,)
         ),
         holder,
       ],
@@ -383,7 +387,7 @@ class _DataTypeState extends State<DataType> {
                 onPressed: () async {
                   if(input1.text != '' && input1.text !='.'&&double.parse(input1.text)!=0) {
                     await DatabaseHelper.instance.addData(
-                      Silver(amount: double.parse(input1.text),unit: selected,userId: 1,date: DateTime.now()),
+                      Silver(amount: double.parse(input1.text),unit: selected,userEmail: userEmail,date: DateTime.now()),
                     );
                   }
                   if(input1.text!=''&&selected!=null) {
@@ -400,7 +404,7 @@ class _DataTypeState extends State<DataType> {
 
         SizedBox(
           height: MediaQuery.of(context).size.height*sizeRatio,
-          child: DataTable(dataType: 'Silver')
+          child: DataTable(dataType: 'Silver',userEmail: userEmail,)
         ),
 
       ],
@@ -475,7 +479,7 @@ class _DataTypeState extends State<DataType> {
                 onPressed: () async {
                   if(input1.text != ''&&int.parse(input1.text) !=0) {
                     await DatabaseHelper.instance.addData(
-                      Cattle(amount: int.parse(input1.text),type: selected,userId: 1,date: DateTime.now()),
+                      Cattle(amount: int.parse(input1.text),type: selected,userEmail: userEmail,date: DateTime.now()),
                     );
                   }
                   if(input1.text!=''&&selected!=null) {
@@ -492,7 +496,7 @@ class _DataTypeState extends State<DataType> {
 
         SizedBox(
           height: MediaQuery.of(context).size.height*sizeRatio,
-          child: DataTable(dataType: 'Cattle')
+          child: DataTable(dataType: 'Cattle',userEmail: userEmail,)
         ),
         ElevatedButton(onPressed: calculateCattleZakat, child: const Text('Calculate Zakat'))
       ],
@@ -604,7 +608,7 @@ class _DataTypeState extends State<DataType> {
                 onPressed: () async {
                   if(input1.text != ''&& input1.text !='.'&&double.parse(input1.text)!=0) {
                     await DatabaseHelper.instance.addData(
-                      Crops(amount: double.parse(input1.text),type: selected,price: double.parse(input2.text),userId: 1,date: DateTime.now()),
+                      Crops(amount: double.parse(input1.text),type: selected,price: double.parse(input2.text),userEmail: userEmail,date: DateTime.now()),
                     );
                   }
                   if(input1.text!=''&&input2.text!=''&&selected!=null) {
@@ -622,7 +626,7 @@ class _DataTypeState extends State<DataType> {
         const Divider(height: 10),
         SizedBox(
             height: MediaQuery.of(context).size.height*sizeRatio,
-            child: DataTable(dataType:'Crops')
+            child: DataTable(dataType:'Crops',userEmail: userEmail,)
         ),
       ],
     );
@@ -809,7 +813,7 @@ class _DataTypeState extends State<DataType> {
                 onPressed: () async {
                   if(input2.text != ''&& input2.text !='.'&&double.parse(input2.text)!=0) {
                     await DatabaseHelper.instance.addData(
-                      Stock(amount: int.parse(input2.text),stock: input1.text,price: double.parse(input3.text),userId: 1,date: DateTime.now()),
+                      Stock(amount: int.parse(input2.text),stock: input1.text,price: double.parse(input3.text),userEmail: userEmail,date: DateTime.now()),
                     );
                   }
                   if(input1.text!=''&&input2.text!=''&&input3.text!='') {
@@ -828,7 +832,7 @@ class _DataTypeState extends State<DataType> {
         const Divider(height: 10),
         SizedBox(
             height: MediaQuery.of(context).size.height*sizeRatio,
-            child: DataTable(dataType:'Stock')
+            child: DataTable(dataType:'Stock',userEmail: userEmail,)
         ),
       ],
     );
@@ -836,7 +840,7 @@ class _DataTypeState extends State<DataType> {
 
 
   void calculateCattleZakat() async {
-    List<dynamic> list = await DatabaseHelper.instance.getData(1,'Cattle');
+    List<dynamic> list = await DatabaseHelper.instance.getData(userEmail,'Cattle');
     int cow= 0;
     int camel= 0;
     int sheep= 0;
@@ -1064,7 +1068,8 @@ class _DataTypeState extends State<DataType> {
 
 class DataTable extends StatefulWidget {
   final String dataType;
-  const DataTable({Key? key,required this.dataType}) : super(key: key);
+  final String userEmail;
+  const DataTable({Key? key,required this.dataType, required this.userEmail}) : super(key: key);
 
   @override
   State<DataTable> createState() => _DataTableState();
@@ -1075,7 +1080,7 @@ class _DataTableState extends State<DataTable> {
   Widget build(BuildContext context) {
     String dataType = widget.dataType;
     return FutureBuilder<List<dynamic>>(
-        future: DatabaseHelper.instance.getData(1,dataType),
+        future: DatabaseHelper.instance.getData(widget.userEmail,dataType),
         builder: (BuildContext context,
             AsyncSnapshot<List<dynamic>> snapshot) {
           if (!snapshot.hasData) {

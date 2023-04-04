@@ -1,14 +1,14 @@
 
 class Money {
   final int? id;
-  final int userId;
+  final String userEmail;
   final DateTime date;
   final double amount;
   final String currency;
 
   const Money({
     this.id,
-    required this.userId,
+    required this.userEmail,
     required this.date,
     required this.amount,
     required this.currency,
@@ -17,7 +17,7 @@ class Money {
     id: json['id'],
     amount: json['amount'],
     currency: json['currency'],
-    userId: json['userId'],
+    userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
   // Convert a Money into a Map. The keys must correspond to the names of the
@@ -27,7 +27,7 @@ class Money {
       'id': id,
       'amount': amount,
       'currency': currency,
-      'userID': userId,
+      'userEmail': userEmail,
       'date': date.toIso8601String(),
     };
   }
@@ -36,20 +36,20 @@ class Money {
 
   @override
   String toString() {
-    return 'Money{id: $id, userID: $userId, date: $date amount: $amount, currency: $currency}';
+    return 'Money{id: $id, userEmail: $userEmail, date: $date amount: $amount, currency: $currency}';
   }
 }
 
 class Gold {
   final int? id;
-  final int userId;
+  final String userEmail;
   final DateTime date;
   final double amount;
   final String unit;
 
   const Gold({
     this.id,
-    required this.userId,
+    required this.userEmail,
     required this.date,
     required this.amount,
     required this.unit,
@@ -58,7 +58,7 @@ class Gold {
     id: json['id'],
     amount: json['amount'],
     unit: json['unit'],
-    userId: json['userId'],
+    userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
   // Convert a Gold into a Map. The keys must correspond to the names of the
@@ -68,7 +68,7 @@ class Gold {
       'id': id,
       'amount': amount,
       'unit': unit,
-      'userID': userId,
+      'userEmail': userEmail,
       'date': date.toIso8601String(),
     };
   }
@@ -77,19 +77,19 @@ class Gold {
 
   @override
   String toString() {
-    return 'Gold{id: $id, userID: $userId, date: $date amount: $amount, unit: $unit}';
+    return 'Gold{id: $id, userEmail: $userEmail, date: $date amount: $amount, unit: $unit}';
   }
 }
 class Silver {
   final int? id;
-  final int userId;
+  final String userEmail;
   final DateTime date;
   final double amount;
   final String unit;
 
   const Silver({
     this.id,
-    required this.userId,
+    required this.userEmail,
     required this.date,
     required this.amount,
     required this.unit,
@@ -98,7 +98,7 @@ class Silver {
     id: json['id'],
     amount: json['amount'],
     unit: json['unit'],
-    userId: json['userId'],
+    userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
   // Convert a Silver into a Map. The keys must correspond to the names of the
@@ -108,7 +108,7 @@ class Silver {
       'id': id,
       'amount': amount,
       'unit': unit,
-      'userID': userId,
+      'userEmail': userEmail,
       'date': date.toIso8601String(),
     };
   }
@@ -117,20 +117,20 @@ class Silver {
 
   @override
   String toString() {
-    return 'Silver{id: $id, userID: $userId, date: $date amount: $amount, unit: $unit}';
+    return 'Silver{id: $id, userEmail: $userEmail, date: $date amount: $amount, unit: $unit}';
   }
 }
 
 class Cattle {
   final int? id;
-  final int userId;
+  final String userEmail;
   final DateTime date;
   final int amount;
   final String type;
 
   const Cattle({
     this.id,
-    required this.userId,
+    required this.userEmail,
     required this.date,
     required this.amount,
     required this.type,
@@ -139,7 +139,7 @@ class Cattle {
     id: json['id'],
     amount: json['amount'],
     type: json['type'],
-    userId: json['userId'],
+    userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
   // Convert a Cattle into a Map. The keys must correspond to the names of the
@@ -149,7 +149,7 @@ class Cattle {
       'id': id,
       'amount': amount,
       'type': type,
-      'userID': userId,
+      'userEmail': userEmail,
       'date': date.toIso8601String(),
     };
   }
@@ -158,13 +158,13 @@ class Cattle {
 
   @override
   String toString() {
-    return 'Cattle{id: $id, userID: $userId, date: $date amount: $amount, type: $type}';
+    return 'Cattle{id: $id, userEmail: $userEmail, date: $date amount: $amount, type: $type}';
   }
 }
 
 class Crops {
   final int? id;
-  final int userId;
+  final String userEmail;
   final DateTime date;
   final double amount;
   final String type;
@@ -172,7 +172,7 @@ class Crops {
 
   const Crops({
     this.id,
-    required this.userId,
+    required this.userEmail,
     required this.date,
     required this.amount,
     required this.type,
@@ -183,7 +183,7 @@ class Crops {
     amount: json['amount'],
     price: json['price'],
     type: json['type'],
-    userId: json['userId'],
+    userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
   // Convert a Crops into a Map. The keys must correspond to the names of the
@@ -194,19 +194,19 @@ class Crops {
       'amount': amount,
       'price': price,
       'type': type,
-      'userID': userId,
+      'userEmail': userEmail,
       'date': date.toIso8601String(),
     };
   }
   // Implement toString to make it easier to see information
   @override
   String toString() {
-    return 'Crops{id: $id, userID: $userId, date: $date amount: $amount, type: $type, price: $price}';
+    return 'Crops{id: $id, userEmail: $userEmail, date: $date amount: $amount, type: $type, price: $price}';
   }
 }
 class Stock {
   final int? id;
-  final int userId;
+  final String userEmail;
   final DateTime date;
   final int amount;
   final String stock;
@@ -214,7 +214,7 @@ class Stock {
 
   const Stock({
     this.id,
-    required this.userId,
+    required this.userEmail,
     required this.date,
     required this.amount,
     required this.stock,
@@ -225,7 +225,7 @@ class Stock {
     amount: json['amount'],
     price: json['price'],
     stock: json['stock'],
-    userId: json['userId'],
+    userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
   // Convert a Crops into a Map. The keys must correspond to the names of the
@@ -236,13 +236,13 @@ class Stock {
       'amount': amount,
       'price': price,
       'stock': stock,
-      'userID': userId,
+      'userEmail': userEmail,
       'date': date.toIso8601String(),
     };
   }
   // Implement toString to make it easier to see information
   @override
   String toString() {
-    return 'Stock{id: $id, userID: $userId, date: $date amount: $amount, stock: $stock, price: $price}';
+    return 'Stock{id: $id, userEmail: $userEmail, date: $date amount: $amount, stock: $stock, price: $price}';
   }
 }

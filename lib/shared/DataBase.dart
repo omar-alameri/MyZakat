@@ -30,12 +30,13 @@ class DatabaseHelper {
     String string = 'String not NULL';
     String double = 'Double not NULL';
 
+
     await db.execute('''
       CREATE TABLE Money(
           $id,
           amount $double,
           currency $string,
-          userId $int,
+          userEmail $String,
           date Date
       )      
       ''');
@@ -53,7 +54,7 @@ class DatabaseHelper {
           $id,
           amount $double,
           unit $string,
-          userId $int,
+          userEmail $String,
           date Date
       )      
       ''');
@@ -62,7 +63,7 @@ class DatabaseHelper {
           $id,
           amount $double,
           unit $string,
-          userId $int,
+          userEmail $String,
           date Date
       )      
       ''');
@@ -71,7 +72,7 @@ class DatabaseHelper {
           $id,
           amount $int,
           type $string,
-          userId $int,
+          userEmail $String,
           date Date
       )      
       ''');
@@ -81,7 +82,7 @@ class DatabaseHelper {
           amount $double,
           price $double,
           type $string,
-          userId $int,
+          userEmail $String,
           date Date
       )      
       ''');
@@ -91,15 +92,15 @@ class DatabaseHelper {
           amount $int,
           price $double,
           stock $string,
-          userId $int,
+          userEmail $String,
           date Date
       )      
       ''');
   }
-  Future<List<dynamic>> getData(int userId,String type) async {
+  Future<List<dynamic>> getData(String userEmail,String type) async {
     Database db = await instance.database;
     try {
-      var data = await db.query(type, where: 'userId = ?', whereArgs: [userId]);
+      var data = await db.query(type, where: 'userEmail = ?', whereArgs: [userEmail]);
     switch(type) {
       case 'Money' :
         return data.isNotEmpty ? data.map((c) => Money.fromMap(c)).toList() : [];

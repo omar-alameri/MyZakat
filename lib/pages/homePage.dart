@@ -15,8 +15,6 @@ class _homePageState extends State<homePage> {
 
   Widget build(BuildContext context) {
 
-    print(FirebaseFirestore.instance.collection('Cryprocurrency').doc());
-
     return Scaffold(
 
       drawer: const myDrawer(),
