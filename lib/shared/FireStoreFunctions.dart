@@ -13,10 +13,11 @@ late String User_Email;
 
 bool email_Used(String Email){
 
-  for (int i = 0; i < User_Id.length; i++)
-    if (Email.toLowerCase() == _UserInfoMap.elementAt(i)['Email'].toString().toLowerCase())
+  for (int i = 0; i < User_Id.length; i++) {
+    if (Email.toLowerCase() == _UserInfoMap.elementAt(i)['Email'].toString().toLowerCase()) {
       return true;
-
+    }
+  }
 
   return false;
 }
@@ -27,17 +28,19 @@ Future get_User_Document_Id(String Email) async {
   bool Notfound = false;
   String FoundId = "";
 
-  for (int i = 0; i < User_Id.length; i++)
+  for (int i = 0; i < User_Id.length; i++) {
     if (Email.toLowerCase() == _UserInfoMap.elementAt(i)['Email'].toString().toLowerCase()) {
       Notfound = true;
       FoundId = User_Id.elementAt(i)["Id"];
       break;
     }
+  }
 
-  if (!Notfound)
+  if (!Notfound) {
     User_Document_Id =  "User Not found";
-  else
+  } else {
     User_Document_Id = FoundId;
+  }
 }
 
 
@@ -55,10 +58,11 @@ Future get_UserInfo() async {
 List<Map> User_Id_List(QuerySnapshot querySnapshot) {
   List<QueryDocumentSnapshot> listDocs = querySnapshot.docs;
   List<Map> listItems = [];
-  for (int i = 0; i < listDocs.length; i++)
+  for (int i = 0; i < listDocs.length; i++) {
     listItems.add({"Id": listDocs
         .elementAt(i)
         .id});
+  }
 
   return listItems;
 }
@@ -78,18 +82,18 @@ List<Map> parseData(QuerySnapshot querySnapshot) {
 Future Add_Email_To_Database(String Email) async {
   final CollectionReference Users = await FirebaseFirestore.instance.collection(
       "Users");
-  Users.add({"Email": Email}).then((
+  print(Users.add({"Email": Email}).then((
       value) => ('user Added')).catchError((onError) =>
-      print('Failed to add user: $onError'));
+      print('Failed to add user: $onError')));
 }
 
 
 Future Delete_User_Info(String Email) async {
   await get_UserInfo();
   CollectionReference Users = await FirebaseFirestore.instance.collection("Users");
-  if (User_Document_Id == "User Not found")
+  if (User_Document_Id == "User Not found") {
     print(User_Document_Id);
-  else {
+  } else {
     Users.doc(User_Document_Id).delete();
     await get_UserInfo();
     print("User Deleted");
@@ -99,9 +103,9 @@ Future Delete_User_Info(String Email) async {
 
 Future Update_User(List<String> Data, String category) async {
   CollectionReference Users = await FirebaseFirestore.instance.collection("Users");
-  if (User_Document_Id == "User Not found")
+  if (User_Document_Id == "User Not found") {
     print(User_Document_Id);
-  else {
+  } else {
     Users.doc(User_Document_Id).update({category: Data});
     print("User Updated");
   }
@@ -109,7 +113,7 @@ Future Update_User(List<String> Data, String category) async {
 
 
 Future Write_User_ZakatData(Map<String,String> Data, String category, String WantedZakatDate) async {
-  String ZakatCollection = "Users/" + User_Document_Id + "/Zakat Data";
+  String ZakatCollection = "Users/$User_Document_Id/Zakat Data";
   CollectionReference Users = await FirebaseFirestore.instance.collection(ZakatCollection);
   if (User_Document_Id == "User Not found")
     print(User_Document_Id);
@@ -124,8 +128,8 @@ Future Write_User_ZakatData(Map<String,String> Data, String category, String Wan
 
 
 Future Append_User_ZakatData(Map<String,String> Data, String category, String WantedZakatDate) async {
-  String ZakatCollection = "Users/" + User_Document_Id + "/Zakat Data";
-  List Temp = [];
+  String ZakatCollection = "Users/$User_Document_Id/Zakat Data";
+  List temp = [];
   Map<String,String> InfoToSet;
   await Read_User_Zakat_Data(WantedZakatDate);
 
@@ -134,11 +138,11 @@ Future Append_User_ZakatData(Map<String,String> Data, String category, String Wa
   for(int i=0;i<Zakat_Data.length;i++) {
     if(Zakat_Data.elementAt(i).keys.elementAt(0)==category)
     {
-      Temp =Zakat_Data.elementAt(i).values.toList();
-      for(int j=0;j<Temp.elementAt(0).keys.length;j++)
+      temp =Zakat_Data.elementAt(i).values.toList();
+      for(int j=0;j<temp.elementAt(0).keys.length;j++)
       {
         InfoToSet = <String, String>{
-          Temp.elementAt(0).keys.elementAt(j): Temp.elementAt(0).values.elementAt(j),
+          temp.elementAt(0).keys.elementAt(j): temp.elementAt(0).values.elementAt(j),
 
         };
         Data.addAll(InfoToSet);
@@ -150,9 +154,9 @@ Future Append_User_ZakatData(Map<String,String> Data, String category, String Wa
     }
   }
   CollectionReference Users = await FirebaseFirestore.instance.collection(ZakatCollection);
-  if (User_Document_Id == "User Not found")
+  if (User_Document_Id == "User Not found") {
     print(User_Document_Id);
-  else {
+  } else {
     Users.doc(WantedZakatDate).update({category: Data});
     Read_User_Zakat_Data(WantedZakatDate);
     print("Appended User Data");
@@ -160,17 +164,18 @@ Future Append_User_ZakatData(Map<String,String> Data, String category, String Wa
 }
 
 Future create_NewEntry_ZakatData(String DateToCreate) async{
-  bool DateExists=false;
+  bool dateExists=false;
   await Read_User_Zakat_Dates();
-  for(int i=0;i<Zakat_Dates.length;i++)
+  for(int i=0;i<Zakat_Dates.length;i++) {
     if(DateToCreate.toLowerCase() == Zakat_Dates.elementAt(i)["Id"].toString().toLowerCase()){
-      DateExists = true;
+      dateExists = true;
       print("Date already exists");
       break;
     }
-  if(!DateExists){
-    String ZakatCollection = "Users/" + User_Document_Id + "/Zakat Data";
-    CollectionReference Users = await FirebaseFirestore.instance.collection(ZakatCollection);
+  }
+  if(!dateExists){
+    String zakatCollection = "Users/$User_Document_Id/Zakat Data";
+    CollectionReference Users = await FirebaseFirestore.instance.collection(zakatCollection);
     await Users.doc(DateToCreate).set({'ZMoney': "20"});
     print("Created new Date");
   }
@@ -178,8 +183,8 @@ Future create_NewEntry_ZakatData(String DateToCreate) async{
 
 
 Future Read_User_Zakat_Dates() async {
-  String ZakatCollection = "Users/" + User_Document_Id + "/Zakat Data";
-  final docRef = FirebaseFirestore.instance.collection(ZakatCollection);
+  String zakatCollection = "Users/$User_Document_Id/Zakat Data";
+  final docRef = FirebaseFirestore.instance.collection(zakatCollection);
   docRef.get().then(
         (doc) { Zakat_Dates =  User_Id_List(doc);},
     onError: (e) => print("Error getting document: $e"),
@@ -188,12 +193,12 @@ Future Read_User_Zakat_Dates() async {
 
 Future Read_User_Zakat_Data(String WantedZakatDate) async {
   await Read_User_Zakat_Dates();
-  String ZakatCollection = "Users/" + User_Document_Id + "/Zakat Data";
+  String zakatCollection = "Users/$User_Document_Id/Zakat Data";
   List<Map> Value = [];
   for (int i = 0; i < Zakat_Dates.length; i++) {
     if (WantedZakatDate.toLowerCase() ==
         Zakat_Dates.elementAt(i)["Id"].toString().toLowerCase()) {
-      final docRef = FirebaseFirestore.instance.collection(ZakatCollection).doc(
+      final docRef = FirebaseFirestore.instance.collection(zakatCollection).doc(
           Zakat_Dates.elementAt(i)["Id"]);
       docRef.get().then(
             (doc) {
@@ -234,14 +239,14 @@ Future print_ZakatData() async{
       Print_KeysandValues(F);
     }
 
-
   }
 
 }
 
 void Print_KeysandValues(List F){
-  for(int indexF = 0; indexF<F.elementAt(0).keys.length;indexF++)
+  for(int indexF = 0; indexF<F.elementAt(0).keys.length;indexF++) {
     print('${F.elementAt(0).keys.elementAt(indexF)}: ${F.elementAt(0).values.elementAt(indexF)}');
+  }
 }
 
 void Detach_StockandCrypto(List F){

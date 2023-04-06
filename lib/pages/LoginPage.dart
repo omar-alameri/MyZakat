@@ -22,7 +22,7 @@ class LoginPage extends StatefulWidget {
 
 
 }
-bool SignedIn = false;
+//bool SignedIn = false;
 
 
 class _LoginPageState extends State<LoginPage>{
@@ -35,6 +35,21 @@ class _LoginPageState extends State<LoginPage>{
     passwordController.dispose();
     super.dispose();
   }
+  Future signInButton() async{
+
+  bool signedIn = await signIn(emailController.text,passwordController.text);
+  // SignedIn = await signIn();
+  if (signedIn){
+  AppManager.savePref('userEmail', emailController.text.trim());
+  Navigator.popAndPushNamed(context, '/home');
+  }
+  else {
+  print("Not Signed In");
+  }
+
+// signOut();
+// FirebaseAuth.instance.authStateChanges().listen((value) { print(value);});
+  }
   // SingleChildScrollView
   @override
   Widget build(BuildContext context){
@@ -44,55 +59,49 @@ class _LoginPageState extends State<LoginPage>{
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 235),
+                SizedBox(height: MediaQuery.of(context).size.height*0.35),
                 TextField(
                   controller: emailController,
                   cursorColor: Colors.blue,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: "Enter Email"),
+                  decoration: const InputDecoration(
+                      labelText: "Email",
+                      constraints: BoxConstraints(maxHeight: 40,minHeight:30 ),
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 10),
                 TextField(
+                  onSubmitted: (s) {
+                    signInButton.call();
+                  },
                   controller: passwordController,
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(labelText: "Enter Password"),
+                  decoration: const InputDecoration(
+                      labelText: "Password",
+                      constraints: BoxConstraints(maxHeight: 40,minHeight:30 ),
+                  ),
                   obscureText: true,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    maximumSize: Size.fromHeight(50),
+                    maximumSize: const Size.fromHeight(50),
                   ),
-                  icon: Icon(Icons.lock_open, size: 32),
-                  label: Text(
+                  icon: const Icon(Icons.lock_open, size: 32),
+                  label: const Text(
                     'Sign In',
                     style: TextStyle(fontSize: 24),
                   ),
-                  onPressed: () async{
-
-                    await signIn(emailController.text.trim(),passwordController.text.trim());
-                    // SignedIn = await signIn();
-                    if (SignedIn){
-                      AppManager.savePref('userEmail', emailController.text.trim());
-                      Navigator.popAndPushNamed(context, '/home');
-
-                    }
-                    else
-                      print("Not Signed In");
-
-                    // signOut();
-                    // FirebaseAuth.instance.authStateChanges().listen((value) { print(value);});
-                    },
+                  onPressed: signInButton,
                 ),
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: const TextStyle(color: Colors.blueGrey),
                     text: 'No account?  ',
                     children: [
                       TextSpan(
-                        recognizer: TapGestureRecognizer()
-                          ..onTap= () {Navigator.pushNamed(context, '/signup');},
+                        recognizer: TapGestureRecognizer()..onTap= () {Navigator.pushNamed(context, '/signup');},
                         text: "Sing Up",
                         style: const TextStyle(
                           decoration: TextDecoration.underline,
@@ -112,7 +121,7 @@ class _LoginPageState extends State<LoginPage>{
 
 }
 
-Future signIn(String Email, String Password) async{
+Future<bool> signIn(String Email, String Password) async{
   try{
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: Email,
@@ -122,18 +131,20 @@ Future signIn(String Email, String Password) async{
     User_Email = await get_email();
     await get_User_Document_Id(User_Email);
     await Read_User_Zakat_Dates();
-    print("The email of the user is $User_Email \n The Document Id is $User_Document_Id");
-    SignedIn =  true;
+    print("The email of the user is $User_Email \nThe Document Id is $User_Document_Id");
+    //SignedIn =  true;
+    return true;
   } on FirebaseAuthException catch(e){
     print('Failed with error code: ${e.code}');
     print(e.message);
-    SignedIn = false;
+    //SignedIn = false;
+    return false;
   }
 }
 
 Future signOut() async{
   await FirebaseAuth.instance.signOut();
-  SignedIn = false;
+  //SignedIn = false;
   // print("SignedIn in LoginPage after Signout is called: $SignedIn");
 }
 
@@ -143,13 +154,13 @@ Future PrintUser_Info() async{
 
 }
 
-Future signUp(email, password, context) async{
+Future signUp(email, password) async{
   try{
-
     await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-
+    return true;
   } on FirebaseAuthException catch(e){
     print("Error while Signing you up: $e");
+    return false;
 
   }
 

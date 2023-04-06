@@ -2,6 +2,7 @@ import 'package:app2/firebase_options.dart';
 import 'package:app2/pages/LoginPage.dart';
 import 'package:app2/pages/SignUpPage.dart';
 import 'package:app2/pages/dataPage.dart';
+import 'package:app2/pages/zakatPage.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/pages/languagePage.dart';
 import 'package:app2/pages/schoolPage.dart';
@@ -47,6 +48,14 @@ class _MyappState extends State<Myapp> {
 
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(fontSize: 20,color: Colors.black87,fontWeight: FontWeight.w400),
+          titleMedium: TextStyle(fontSize: 20,color: Colors.black),
+          titleLarge: TextStyle(fontSize: 25,color: Colors.black),
+        ),
+        snackBarTheme: const SnackBarThemeData(
+            backgroundColor: Colors.grey
+        ),
         inputDecorationTheme: const InputDecorationTheme(
           floatingLabelStyle: TextStyle(color: Colors.green,),
           constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
@@ -71,6 +80,26 @@ class _MyappState extends State<Myapp> {
         brightness: Brightness.light,
       ),
       darkTheme: ThemeData(
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(fontSize: 20,color: Colors.white54,fontWeight: FontWeight.w400),
+          titleMedium: TextStyle(fontSize: 20,color: Colors.white),
+        ),
+        snackBarTheme:  const SnackBarThemeData(
+          backgroundColor: Colors.grey,
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          floatingLabelStyle: TextStyle(color: Colors.green,),
+          constraints: BoxConstraints(maxHeight: 30,minHeight:30 ),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32)),
+              borderSide: BorderSide(color: Colors.green)
+          ),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32)),
+              borderSide: BorderSide(color: Colors.grey)
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
               backgroundColor: MaterialStatePropertyAll<Color>(Colors.green.shade900),
@@ -91,6 +120,7 @@ class _MyappState extends State<Myapp> {
         '/language': (context) => const LanguagePage(),
         '/school': (context) => const schoolPage(),
         '/data': (context) => const DataPage(),
+        '/zakat': (context) => const ZakatPage(),
       },
     );
   }

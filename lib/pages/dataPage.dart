@@ -12,6 +12,7 @@ class DataPage extends StatefulWidget {
 
 class _DataPageState extends State<DataPage> {
   dynamic school;
+  bool done=false;
 
   List<String> items = <String>[
     'Gold',
@@ -28,31 +29,25 @@ class _DataPageState extends State<DataPage> {
   String userEmail = '';
 
   @override
-  void didChangeDependencies() {
-    AppManager.readPref('userEmail').then((value)
-    {userEmail = value;
-    for (String s in items) {
-      DatabaseHelper.instance.getData(userEmail, s).then((value) {
-        if (items.contains(s) && value.isNotEmpty) {
-          setState(() {
-            activeItems.add(s);
-            items.remove(s);
-          });
-        }
-      });
-    }
-    });
-
+  void didChangeDependencies() async{
+    super.didChangeDependencies();
     AppManager.readPref('pCurrency').then((value) {
       if (value == null) AppManager.savePref('pCurrency', 'USD');
     });
-
-    AppManager.readPref('School').then((value) {
-      setState(() {
-        school = value;
-      });
-    });
-    super.didChangeDependencies();
+    userEmail = await AppManager.readPref('userEmail');
+    List<dynamic> data;
+    int length = items.length;
+    for (int i=0;i<length;i++) {
+      data = await DatabaseHelper.instance.getData(userEmail, items.last);
+        if (items.contains(items.last) && data.isNotEmpty) {
+            activeItems.add(items.last);
+            items.removeLast();
+        }
+    }
+    school= await AppManager.readPref('School');
+    if(mounted) {
+      setState(() {done=true;});
+    }
   }
 
   @override
@@ -61,7 +56,7 @@ class _DataPageState extends State<DataPage> {
       appBar: AppBar(
         title: Text(school ?? ""),
       ),
-      body: SizedBox(
+      body: done ? SizedBox(
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           controller: scroll,
@@ -101,29 +96,35 @@ class _DataPageState extends State<DataPage> {
                         });
                       },
                       child: const Text("Add")),
+                  const VerticalDivider(),
+                  ElevatedButton(
+                      onPressed: ()  {
+                        Navigator.pushNamed(context, '/zakat');
+                      },
+                      child: const Text("Calculate")),
                 ],
               ),
               ListView.builder(
-                key: Key('builder ${selectedId.toString()}'), //attention
+                key: Key('builder ${selectedId.toString()}'),
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: activeItems.length,
                 itemBuilder: (context, index) {
                   return Card(
                       child: ExpansionTile(
-                    key: Key(index.toString()),
-                    initiallyExpanded: index == selectedId,
-                    textColor: Colors.green,
-                    iconColor: Colors.green,
-                    title: Text(activeItems[index]),
-                    onExpansionChanged: (value) {
-                      if (value) {
-                        setState(() {
-                          selectedId = index;
-                        });
-                        scroll.animateTo((66.0 * index + 50),
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.linear);
+                        key: Key(index.toString()),
+                        initiallyExpanded: index == selectedId,
+                        textColor: Colors.green,
+                        iconColor: Colors.green,
+                        title: Text(activeItems[index]),
+                        onExpansionChanged: (value) {
+                          if (value) {
+                            setState(() {
+                              selectedId = index;
+                           });
+                            scroll.animateTo((66.0 * index + 50),
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.linear);
                       } else {
                         setState(() {
                           selectedId = -1;
@@ -134,13 +135,14 @@ class _DataPageState extends State<DataPage> {
                     children: [
                       DataType(datatype: activeItems[index]),
                     ],
-                  ));
+                  )
+                  );
                 },
               ),
             ],
           ),
         ),
-      ),
+      ): const Center(child:  CircularProgressIndicator()),
     );
   }
 }

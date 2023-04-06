@@ -11,10 +11,13 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
+  String s='';
   @override
 
-  Widget build(BuildContext context) {
 
+  Widget build(BuildContext context) {
+    
+    
     return Scaffold(
 
       drawer: const myDrawer(),
@@ -24,11 +27,11 @@ class _homePageState extends State<homePage> {
           children: [
             ElevatedButton(
               onPressed: (){
-
-                 Navigator.pushNamed(context, '/language');
+                Navigator.pushNamed(context, '/language');
               },
               child: const Text('Start'),
             ),
+            Text(s)
 
           ],
         ),

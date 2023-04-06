@@ -1,6 +1,8 @@
 import 'package:app2/pages/LoginPage.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class myDrawer extends StatefulWidget {
@@ -15,11 +17,10 @@ class _myDrawerState extends State<myDrawer> {
 
   List<String> itemsL = <String>['English', 'Arabic'];
   List<String> itemsS = <String>["Shafi'i", 'Hanbali', 'Maliki', 'Hanafi'];
-  List<String> itemsC = <String>['AED', 'USD'];
 
   String? selectedLanguage;
   String? selectedSchool;
-  String? selectedCurrency;
+  TextEditingController selectedCurrency = TextEditingController();
 
   @override
   void didChangeDependencies() {
@@ -28,7 +29,7 @@ class _myDrawerState extends State<myDrawer> {
     AppManager.readPref('School').then((value)
     {selectedSchool = value;});
     AppManager.readPref('pCurrency').then((value)
-    {setState(() {selectedCurrency = value;});});
+    {setState(() {selectedCurrency.text = value;});});
     super.didChangeDependencies();
   }
   @override
@@ -54,11 +55,11 @@ class _myDrawerState extends State<myDrawer> {
 
                   ],
             ),
-                const Divider(),
-                const Text('Language'),
+                const Divider(thickness: 1,),
+                const Text('Language',style: TextStyle(fontWeight: FontWeight.bold),),
                 DropdownButton(
+                    underline: const Text(''),
                     iconSize: 30,
-                    iconEnabledColor: Colors.blue,
                     enableFeedback: true,
                     value: selectedLanguage,
                     items: itemsL.map((String items) {
@@ -67,17 +68,17 @@ class _myDrawerState extends State<myDrawer> {
                         child: Text(items),
                       );
                     }).toList(),
-                    onChanged: (var newValue) {
+                    onChanged: (newValue) {
                       setState(() {
                         selectedLanguage = newValue;
                         AppManager.savePref('Language', selectedLanguage);
                       });
                     }),
-                const Divider(),
-                const Text('School'),
+                const Divider(thickness: 1,),
+                const Text('School',style: TextStyle(fontWeight: FontWeight.bold),),
                 DropdownButton(
+                    underline: const Text(''),
                     iconSize: 30,
-                    iconEnabledColor: Colors.blue,
                     enableFeedback: true,
                     value: selectedSchool,
                     items: itemsS.map((String items) {
@@ -92,33 +93,94 @@ class _myDrawerState extends State<myDrawer> {
                         AppManager.savePref('School', selectedSchool);
                       });
                     }),
-                const Divider(),
-                const Text('Currency'),
-                DropdownButton(
-                    iconSize: 30,
-                    iconEnabledColor: Colors.blue,
-                    enableFeedback: true,
-                    value: selectedCurrency,
-                    items: itemsC.map((String items) {
-                      return DropdownMenuItem(
-                        value: items,
-                        child: Text(items),
-                      );
-                    }).toList(),
-                    onChanged: (var newValue) {
-                      setState(() {
-                        selectedCurrency = newValue;
-                        AppManager.savePref('pCurrency', selectedCurrency);
+                const Divider(thickness: 1,),
+                const Text('Currency',style: TextStyle(fontWeight: FontWeight.bold),),
+                DropdownSearch<String>(
 
-                      });
-                    }),
-                ElevatedButton(onPressed: (){
-                  AppManager.removePref('userEmail');
-                  AppManager.removePref('School');
-                  AppManager.removePref('Language');
-                  signOut();
-                  Navigator.pushNamedAndRemoveUntil(context, '/',(route) =>false);
-                }, child: const Text('SignOut'),)
+                  onBeforePopupOpening: (x) async{
+                    if(selectedCurrency.text == '') {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  },
+                  asyncItems: (x) async{
+                    var s = await AppManager.search_Currency(selectedCurrency.text);
+                    return s;
+                  },
+                  onChanged: (s){
+                    AppManager.savePref('pCurrency', s);
+                    setState(() {
+                      selectedCurrency.text = s??'';
+                    });
+                  },
+                  dropdownBuilder: (context,s){
+                    return TextField(
+                      onSubmitted: (s) async{
+                        List<String> list= await AppManager.search_Currency(s);
+                        if(!list.contains(s)) {
+                          var snackBar = const SnackBar(
+                            content: Center(child: Text('Invalid Currency')),
+                            behavior: SnackBarBehavior.floating,
+                          );
+                          if(context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          }
+                        } else{
+                          AppManager.savePref('pCurrency', s);
+                        }
+                      },
+                      textAlign: TextAlign.center,
+                      textInputAction: TextInputAction.search,
+                      style: const TextStyle(
+                        fontSize:20,
+                      ),
+                      decoration: const InputDecoration(
+                        constraints: BoxConstraints(maxHeight: 20,minHeight:20 ),
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                         // contentPadding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                        isCollapsed: true,
+                      ),
+                      controller: selectedCurrency,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
+                        TextInputFormatter.withFunction((oldValue, newValue)
+                        {
+                          if(newValue.text.length <4) {
+                            return TextEditingValue(text:newValue.text.toUpperCase(),selection: newValue.selection);
+                          }
+                          return oldValue;
+                        })
+                      ],
+                    );
+                  },
+                  selectedItem: selectedCurrency.text,
+                  dropdownButtonProps:  const DropdownButtonProps(
+                      icon: Icon(Icons.search),
+                      padding: EdgeInsets.symmetric(vertical: 4)
+                  ),
+
+                  dropdownDecoratorProps: const DropDownDecoratorProps(
+                    baseStyle: TextStyle(fontSize:20),
+                    dropdownSearchDecoration: InputDecoration(
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+
+
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ElevatedButton(onPressed: (){
+                      signOut();
+                      Navigator.pushNamedAndRemoveUntil(context, '/',(route) =>false);
+                    }, child: const Text('SignOut'),),
+                  ),
+                )
               ],
         )));
   }

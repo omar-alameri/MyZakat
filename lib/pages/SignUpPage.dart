@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +6,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/FireStoreFunctions.dart';
 import 'package:app2/pages/LoginPage.dart';
+
+import '../shared/tools.dart';
 
 class SignUpPage extends StatefulWidget{
   const SignUpPage({super.key});
@@ -18,75 +19,96 @@ class SignUpPage extends StatefulWidget{
 late Timer DeleteAccountTimer;
 late Timer VerifyTimer;
 class _SignUpPage extends State<SignUpPage>{
-  final SignUpemailController = TextEditingController();
-  final SignUppasswordController = TextEditingController();
+  TextEditingController SignUpemailController = TextEditingController();
+  TextEditingController SignUppasswordController = TextEditingController();
 
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
       body:SingleChildScrollView(
-        padding: EdgeInsets.all(45),
+        padding: const EdgeInsets.all(45),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 235),
+              SizedBox(height: MediaQuery.of(context).size.height*0.35),
               TextField(
+
                 controller: SignUpemailController,
                 cursorColor: Colors.blueGrey,
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(labelText: "Enter Email"),
+                decoration: const InputDecoration(
+                    labelText: "Enter Email",
+                    constraints: BoxConstraints(maxHeight: 40,minHeight:30 ),
+                ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 10),
               TextField(
                 controller: SignUppasswordController,
                 textInputAction: TextInputAction.done,
-                decoration: InputDecoration(labelText: "Enter Password"),
+                decoration: const InputDecoration(
+                    labelText: "Enter Password",
+                    constraints: BoxConstraints(maxHeight: 40,minHeight:30 ),
+                ),
                 obscureText: true,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton.icon(
                 
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blueGrey,
-                  maximumSize: Size.fromHeight(50),
+                  maximumSize: const Size.fromHeight(50),
                 ),
-                icon: Icon(Icons.add_box, size: 32),
-                label: Text(
+                icon: const Icon(Icons.add_box, size: 32),
+                label: const Text(
                   'Sign Up',
                   style: TextStyle(fontSize: 24),
                 ),
                 onPressed: () async{
-                  await signUp(SignUpemailController.text.trim(),SignUppasswordController.text.trim(), context);
-                  await get_UserInfo();
-                    if(EmailValidator.validate(SignUpemailController.text.trim()) && !email_Used(SignUpemailController.text.trim())){
+                  bool signedUp = await signUp(SignUpemailController.text.trim(),SignUppasswordController.text.trim());
+                  if(EmailValidator.validate(SignUpemailController.text.trim()) && signedUp){
+                      bool signedIn = await signIn(SignUpemailController.text.trim(),SignUppasswordController.text.trim());
                       await Add_Email_To_Database(SignUpemailController.text.trim());
                       await get_UserInfo();
-                      await signIn(SignUpemailController.text.trim(),SignUppasswordController.text.trim());
                       print(SignUpemailController.text.trim() + " " + SignUppasswordController.text.trim());
                       FirebaseAuth.instance.currentUser?.sendEmailVerification();
-                      DeleteAccountTimer = Timer.periodic(Duration(seconds: 30), (timer) {delete_User(SignUpemailController.text.trim());});
-                      VerifyTimer = Timer.periodic(Duration(seconds: 2), (timer) {User_Verified();});
+                      DeleteAccountTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Email verification link has expired. Please sign up again'),
+                          behavior: SnackBarBehavior.floating,
+                        ));
+                        AppManager.delete_User(SignUpemailController.text.trim());
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        duration: Duration(seconds: 10),
+                        content: CountDown(time: 10,),
+                        behavior: SnackBarBehavior.floating,
+                      ));
+                      VerifyTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                        User_Verified(signedIn);
+                      });
 
-                    }
-                    else{
+                  }
+                  else{
                       print("Email invalid format or The Email is already used for another account");
-                      delete_User(SignUpemailController.text.trim());
-                    }
+                      if(signedUp) {
+                        Delete_User_Info(SignUpemailController.text.trim());
+                      }
+                      //AppManager.delete_User(SignUpemailController.text.trim());
+                  }
 
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               RichText(
                 text: TextSpan(
-                    style: TextStyle(color: Colors.blueGrey),
+                    style: const TextStyle(color: Colors.blueGrey),
                     text: 'Already have an account?  ',
                     children: [
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap= () {Navigator.pop(context);},
                         text: "Sing In",
-                        style: TextStyle(
+                        style: const TextStyle(
                           decoration: TextDecoration.underline,
                           color: Colors.black,
                         ),
@@ -104,15 +126,15 @@ class _SignUpPage extends State<SignUpPage>{
 
 
 
-  Future User_Verified() async{
+  Future User_Verified(bool SignedIn) async{
     // print(FirebaseAuth.instance.authStateChanges().listen((event) {print("Event from authStateChanges() : $event");}));
     print("Am I Signed In? : $SignedIn");
-    if(!FirebaseAuth.instance.currentUser!.emailVerified)
+    if(!FirebaseAuth.instance.currentUser!.emailVerified) {
       await FirebaseAuth.instance.currentUser?.reload();
-
+    }
     // print(FirebaseAuth.instance.currentUser?.emailVerified);
     if(FirebaseAuth.instance.currentUser?.emailVerified == true){
-      print("User Verified!");
+      //print("User Verified!");
       await signOut();
       DeleteAccountTimer.cancel();
       VerifyTimer.cancel();
@@ -124,7 +146,6 @@ class _SignUpPage extends State<SignUpPage>{
   void dispose(){
     DeleteAccountTimer.cancel();
     VerifyTimer.cancel();
-
     super.dispose();
 
   }
@@ -132,13 +153,4 @@ class _SignUpPage extends State<SignUpPage>{
 
 
 
-Future delete_User(String Email) async{
-  DeleteAccountTimer.cancel();
-  VerifyTimer.cancel();
-  Delete_User_Info(Email);
-  await FirebaseAuth.instance.currentUser?.delete();
-  await signOut();
-  print("Email verification link has expired. Please sign up again");
 
-
-}

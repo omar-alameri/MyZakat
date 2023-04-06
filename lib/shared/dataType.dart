@@ -1,11 +1,9 @@
-
 import 'package:app2/shared/dataModels.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:app2/shared/DataBase.dart';
 import 'package:flutter/services.dart';
-
 
 
 class DataType extends StatefulWidget {
@@ -22,13 +20,8 @@ class _DataTypeState extends State<DataType> {
   TextEditingController input1 = TextEditingController();
   TextEditingController input2 = TextEditingController();
   TextEditingController input3 = TextEditingController();
-  String stockPrice='';
-  Widget holder = const CircularProgressIndicator();
-  int? selectedId;
   String preferredCurrency = '';
   String userEmail = '';
-
-  List<String> goldRate = [];
   final double sizeRatio = 0.6;
   TextInputFormatter doubleFormatter = TextInputFormatter.withFunction((oldValue, newValue)
   {
@@ -77,6 +70,7 @@ class _DataTypeState extends State<DataType> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
                 child: DropdownSearch<String>(
+
                   onBeforePopupOpening: (x) async{
                     if(selected == null || selected == '') {
                       return false;
@@ -86,7 +80,6 @@ class _DataTypeState extends State<DataType> {
                   },
                   asyncItems: (x) async{
                     var s = await AppManager.search_Currency(selected);
-
                     return s;
                   },
                   onChanged: (s){
@@ -97,7 +90,21 @@ class _DataTypeState extends State<DataType> {
                   },
                   dropdownBuilder: (context,s){
                     return TextField(
-
+                      onSubmitted: (s) async{
+                        List<String> list= await AppManager.search_Currency(s);
+                        if(!list.contains(s)) {
+                          var snackBar = const SnackBar(
+                            content: Center(child: Text('Invalid Currency')),
+                            behavior: SnackBarBehavior.floating,
+                          );
+                          if(context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          }
+                        } else{
+                          selected = s;
+                        }
+                      },
+                      textInputAction: TextInputAction.search,
                       style: const TextStyle(
                         fontSize:20,
                       ),
@@ -112,6 +119,7 @@ class _DataTypeState extends State<DataType> {
                         selected = input2.text;
                       },
                       inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
                         TextInputFormatter.withFunction((oldValue, newValue)
                         {
                           if(newValue.text.length <4) {
@@ -123,7 +131,7 @@ class _DataTypeState extends State<DataType> {
                     );
                   },
                   selectedItem: selected,
-                  dropdownButtonProps: const DropdownButtonProps(
+                  dropdownButtonProps:  const DropdownButtonProps(
                       icon: Icon(Icons.search),
                       padding: EdgeInsets.symmetric(vertical: 4)
                   ),
@@ -138,7 +146,6 @@ class _DataTypeState extends State<DataType> {
 
                 ),
                 // DropdownButton(
-                //     underline: const Text(''),
                 //     isExpanded: true,
                 //     borderRadius: BorderRadius.circular(5),
                 //     hint: const Text('Currency'),
@@ -188,19 +195,11 @@ class _DataTypeState extends State<DataType> {
              height: MediaQuery.of(context).size.height*sizeRatio,
           child:  DataTable(dataType: 'Money',userEmail: userEmail,)
         ),
-        const Divider(height: 10, color: Colors.green,),
-        ElevatedButton(onPressed: calculateMoneyZakat, child: const Text('Calculate Zakat')),
       ],
     );
   }
   Widget GoldWidget() {
-
-    AppManager.get_GoldPriceDubai().then((value) {
-      if (goldRate.toString() != value.toString())
-      {goldRate = value;
-      holder = Text('1: ${goldRate[0]} 2: ${goldRate[1]} 3: ${goldRate[2]} 4: ${goldRate[3]} ',textDirection: TextDirection.ltr,);
-        setState(() {});
-      }});
+    List<String> units = ['Gram K24','Gram K22','Gram K21','Gram K18'];
     return Column(
 
       children: [
@@ -234,24 +233,7 @@ class _DataTypeState extends State<DataType> {
                     borderRadius: BorderRadius.circular(5),
                     hint: const Text('Unit'),
                     value: selected,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Gram K24',
-                        child: Text('Gram K24'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K22',
-                        child: Text('Gram K22'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K21',
-                        child: Text('Gram K21'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K18',
-                        child: Text('Gram K18'),
-                      ),
-                    ],
+                    items: units.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList(),
                     onChanged: (var newValue) {
                       setState(() {
                         selected = newValue;
@@ -281,17 +263,15 @@ class _DataTypeState extends State<DataType> {
           ],
         ),
         const Divider(height: 10),
-
         SizedBox(
           height: MediaQuery.of(context).size.height*sizeRatio,
           child: DataTable(dataType: 'Gold',userEmail: userEmail,)
         ),
-        holder,
       ],
     );
   }
   Widget SilverWidget() {
-
+    List<String> units = ['Gram K99.9','Gram K95.8','Gram K92.5','Gram K90','Gram K80'];
 
     return Column(
 
@@ -325,28 +305,7 @@ class _DataTypeState extends State<DataType> {
                     borderRadius: BorderRadius.circular(5),
                     hint: const Text('Unit'),
                     value: selected,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Gram K99.9',
-                        child: Text('Gram K99.9'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K95.8',
-                        child: Text('Gram K95.8'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K92.5',
-                        child: Text('Gram K92.5'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K90',
-                        child: Text('Gram K90'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Gram K80',
-                        child: Text('Gram K80'),
-                      ),
-                    ],
+                    items: units.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList(),
                     onChanged: (var newValue) {
                       setState(() {
                         selected = newValue;
@@ -386,6 +345,8 @@ class _DataTypeState extends State<DataType> {
     );
   }
   Widget CattleWidget() {
+    List<String> animals = ['Cow','Camel','Sheep'];
+
     return Column(
 
       children: [
@@ -415,20 +376,7 @@ class _DataTypeState extends State<DataType> {
                     borderRadius: BorderRadius.circular(5),
                     hint: const Text('Type'),
                     value: selected,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Cow',
-                        child: Text('Cow'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Camel',
-                        child: Text('Camel'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Sheep',
-                        child: Text('Sheep'),
-                      ),
-                    ],
+                    items: animals.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList(),
                     onChanged: (var newValue) {
                       setState(() {
                         selected = newValue;
@@ -463,12 +411,11 @@ class _DataTypeState extends State<DataType> {
           height: MediaQuery.of(context).size.height*sizeRatio,
           child: DataTable(dataType: 'Cattle',userEmail: userEmail,)
         ),
-        ElevatedButton(onPressed: calculateCattleZakat, child: const Text('Calculate Zakat'))
       ],
     );
   }
   Widget CropsWidget() {
-
+    List<String> types = ['Without cost','With cost'];
     return Column(
 
       children: [
@@ -522,21 +469,7 @@ class _DataTypeState extends State<DataType> {
                     borderRadius: BorderRadius.circular(10),
                     hint: const Text('Irrigation'),
                     value: selected,
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Without cost',
-                        child: Text('Without cost'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'With cost',
-                        child: Text('With cost'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Both methods alike',
-                        child: Text('Both methods alike'),
-                      ),
-
-                    ],
+                    items: types.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList(),
                     onChanged: (var newValue) {
                       setState(() {
                         selected = newValue;
@@ -577,7 +510,6 @@ class _DataTypeState extends State<DataType> {
   Widget StockWidget() {
 
     return Column(
-
       children: [
         Row(
           children: [
@@ -605,8 +537,9 @@ class _DataTypeState extends State<DataType> {
                           });
 
                         }else {
-                           var snackBar = SnackBar(
+                          var snackBar = SnackBar(
                             content: Text('Price not founded. Please enter it in $preferredCurrency'),
+                            behavior: SnackBarBehavior.floating,
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         }
@@ -615,6 +548,10 @@ class _DataTypeState extends State<DataType> {
                     asyncItems: (x) async{
                       var s = await AppManager.search_StockName(selected);
                       List<String> list =[];
+                      if(s.first[0]=='No Internet connection.') {
+                        list.add(s.first[0]);
+                        return list;
+                      }
                       for(int i=0;i<s.first.length;i++){
                         list.add('${s.first[i]} (${s.last[i]})');
                       }
@@ -641,34 +578,29 @@ class _DataTypeState extends State<DataType> {
                       icon: Icon(Icons.search),
                       padding: EdgeInsets.symmetric(vertical: 4)
                     ),
-
                     dropdownDecoratorProps: const DropDownDecoratorProps(
                       baseStyle: TextStyle(fontSize:20),
                       dropdownSearchDecoration: InputDecoration(
                         labelText: 'Name',
                       ),
                     ),
-
-
                   ),
                   const SizedBox(height: 10,),
                   TextField(
                     decoration: const InputDecoration(
                       labelText: 'Quantity',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: false),
                     style: const TextStyle(fontSize:20),
                     controller: input2,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly
                     ],
-
                   ),
                   const SizedBox(height: 10,),
                   TextField(
-
-                    decoration:  const InputDecoration(
-                      labelText: 'Price',
+                    decoration:   InputDecoration(
+                      labelText: 'Price ($preferredCurrency)',
                     ),
                     keyboardType: const TextInputType.numberWithOptions(signed: false, decimal: true),
                     style: const TextStyle(fontSize:20),
@@ -749,217 +681,6 @@ class _DataTypeState extends State<DataType> {
   }
 
 
-  void calculateCattleZakat() async {
-    List<dynamic> list = await DatabaseHelper.instance.getData(userEmail,'Cattle');
-    int cow= 0;
-    int camel= 0;
-    int sheep= 0;
-    String CowMessage1 = '';
-    String CowMessage2 = '';
-    String SheepMessage = '';
-    String CamelMessage1 = '';
-    String CamelMessage2 = '';
-    const String CowHint1 = 'Calf that is one year old.';
-    const String CowHint2 = 'Calf that is already two years old.';
-    const String sheepHint = 'Female sheep that are one year old at least.';
-    const String camelHint1 = 'Female camel that is already one year old.';
-    const String camelHint2 = 'Female camel that is already two years old';
-    const String camelHint3 = 'Female camel that is already three years old.';
-    const String camelHint4 = 'Female camel that is already four years old.';
-    const String nothing = 'Nothing.';
-    List<String> Hints = [];
-
-
-
-
-    for (var e in list){
-      if(e.type == 'Cow') {cow+= e.amount as int;
-      } else if(e.type == 'Sheep') {sheep+= e.amount as int;
-      } else if(e.type == 'Camel') {camel+= e.amount as int;
-      }
-    }
-
-    if(cow<30) {
-      CowMessage1 = nothing;
-    } else if(cow>=30 && cow<=39) {
-      CowMessage1 =("1 tabea'.");
-      Hints.add(CowHint1);
-    } else if(cow>=40 && cow<=59) {
-      CowMessage1 =("1 msna.");
-      Hints.add(CowHint2);
-    } else if(cow>=60 && cow<=69) {
-      CowMessage1 =("2 tabea'.");
-      Hints.add(CowHint1);
-    } else if(cow>=70 && cow<=79) {
-      CowMessage1 =("1 msna");
-      Hints.add(CowHint2);
-      CowMessage2 =(" and 1 tbea'.");
-      Hints.add(CowHint1);
-
-    } else if(cow>=80 && cow<=89) {
-      CowMessage1 =("2 msna.");
-      Hints.add(CowHint2);
-    } else if(cow>=90 && cow<=99) {
-      CowMessage1 =("3 tbea'.");
-      Hints.add(CowHint1);
-    } else if(cow>=100 && cow<=109) {
-      CowMessage1 =("1 msna");
-      Hints.add(CowHint2);
-      CowMessage2 =(" and 2 tbea'.");
-      Hints.add(CowHint1);
-    } else if(cow>=110 && cow<=119) {
-      CowMessage1 =("2 msna");
-      Hints.add(CowHint2);
-      CowMessage2 =(" and 2 tbea'.");
-      Hints.add(CowHint1);
-    } else if(cow>=120 && cow<=129) {
-      CowMessage1 =("3 msna");
-      CowMessage2 =(" or 4 tbea'.");
-      Hints.add(CowHint2);
-      Hints.add(CowHint1);
-    } else {
-      int temp = cow - 120;
-      int tbea = temp ~/ 30;
-      int msna = temp ~/ 40;
-      CowMessage1 ="${3+msna} msna";
-      CowMessage2 = " or ${4+tbea} tbea'.";
-      Hints.add(CowHint2);
-      Hints.add(CowHint1);
-    }
-    Hints.add(sheepHint);
-    if(sheep<40) {
-      SheepMessage =nothing;
-      Hints.remove(sheepHint);
-    } else if(sheep>=40 && sheep<=120) {
-      SheepMessage =("shah.");
-    } else if(sheep>=121 && sheep<=200) {
-      SheepMessage =("2 shah.");
-    } else if(sheep>=201 && sheep<=399) {
-      SheepMessage =("3 shah.");
-    } else if(sheep>=400 && sheep<=499) {
-      SheepMessage =("4 shah.");
-    } else if(sheep>=500 && sheep<=599) {
-      SheepMessage =("5 shah.");
-    } else {
-      int temp = sheep - 500;
-      int shah = temp ~/ 100;
-      SheepMessage =("${5+shah} shah.");
-    }
-    if(camel<4) {
-      CamelMessage1 =nothing;
-    } else if(camel>=5 && camel<=9) {
-      CamelMessage1 =("1 shah.");
-    } else if(camel>=10 && camel<=14) {
-      CamelMessage1 =("2 shah.");
-    } else if(camel>=15 && camel<=19) {
-      CamelMessage1 =(" 3 shah.");
-    } else if(camel>=20 && camel<=24) {
-      CamelMessage1 =(" 4 shah.");
-    } else if(camel>=25 && camel<=35) {
-      CamelMessage1 =("1 bnt mkhad.");
-      Hints.add(camelHint1);
-    } else if(camel>=36 && camel<=45) {
-      CamelMessage1 =("1 bnt lboon.");
-      Hints.add(camelHint2);
-    } else if(camel>=46 && camel<=60) {
-      CamelMessage1 =("1 haqqa.");
-      Hints.add(camelHint3);
-    } else if(camel>=61 && camel<=75) {
-      CamelMessage1 =("1 jtha'a.");
-      Hints.add(camelHint4);
-    } else if(camel>=76 && camel<=90) {
-      CamelMessage1 =("2 bnt lboon.");
-      Hints.add(camelHint2);
-    } else if(camel>=91 && camel<=120) {
-      CamelMessage1 =("2 haqqa.");
-      Hints.add(camelHint3);
-    } else if(camel>=121 && camel<=129) {
-      CamelMessage1 =("3 bnt lboon.");
-      Hints.add(camelHint2);
-    } else if(camel>=130 && camel<=139) {
-      CamelMessage1 =("2 bnt lboon");
-      CamelMessage2 =(" and 1 haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    } else if(camel>=140 && camel<=149) {
-      CamelMessage1 =("1 bnt lboon");
-      CamelMessage2 =(" and 2 haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    } else if(camel>=150 && camel<=159) {
-      CamelMessage1 =("3 haqqa.");
-      Hints.add(camelHint3);
-    } else if(camel>=160 && camel<=169) {
-      CamelMessage1 =("4 bnt lboon.");
-      Hints.add(camelHint2);
-    } else if(camel>=170 && camel<=179) {
-      CamelMessage1 =("3 bnt lboon");
-      CamelMessage2 =(" and 1 haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    } else if(camel>=180 && camel<=189) {
-      CamelMessage1 =("2 bnt lboon");
-      CamelMessage2 =(" and 2 haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    } else if(camel>=190 && camel<=199) {
-      CamelMessage1 =("1 bnt lboon");
-      CamelMessage2 =(" and 3 haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    } else if(camel>=200 && camel<=209) {
-      CamelMessage1 =("5 bnt lboon");
-      CamelMessage2 =(" or 4 haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    } else {
-      int temp = camel - 200;
-      int bntlaboon = temp ~/ 40;
-      int haqqa = temp ~/ 50;
-      CamelMessage1 =("${5+bntlaboon} bnt lboon");
-      CamelMessage2 =(" or ${4+haqqa} haqqa.");
-      Hints.add(camelHint2);
-      Hints.add(camelHint3);
-    }
-    showDialog(context: context, builder: (context) => AlertDialog(
-        title: const Center(child: Text('Cattle Zakat')),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(children: [const Text('Cow : '),CowMessage1 != nothing?Info(message: Hints.removeAt(0), child: Text(CowMessage1)):Text(CowMessage1) , CowMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CowMessage2)):Text(CowMessage2)]),
-            Row(children: [const Text('Sheep : '),SheepMessage != nothing ?Info(message: Hints.removeAt(0), child: Text(SheepMessage)):Text(SheepMessage)]),
-            Row(children: [const Text('Camel : '),CamelMessage1 != nothing ?Info(message: Hints.removeAt(0), child: Text(CamelMessage1)):Text(CamelMessage1),CamelMessage2 != '' ? Info(message: Hints.removeAt(0), child: Text(CamelMessage2)):Text(CamelMessage2)]),
-
-        ],),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('ok'))],
-    ));
-}
-  void calculateMoneyZakat() async {
-    // String message = '';
-    showDialog(context: context, builder: (context)=>Center(child: holder));
-    double total = await AppManager.calcTotalMoney();
-    List<String> goldList = await AppManager.get_GoldPriceDubai();
-    if(double.tryParse(goldList[0].substring(0,5)) != null) {
-      double goldPrice = double.parse(goldList[0].substring(0,5));
-      goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
-      Navigator.pop(context);
-      showDialog(context: context, builder: (context) => AlertDialog(
-        title: const Center(child: Text('Money Zakat')),
-        content: SizedBox(
-          height: 60,
-          child: Column(children: [Text('Total: ${total.toStringAsFixed(2)} $preferredCurrency'),
-            Text('Nisab: ${(goldPrice*85).toStringAsFixed(2)} $preferredCurrency'),
-            Text('Zakat: ${total>goldPrice*85 ? (total*0.025).toStringAsFixed(2):'Nothing'}')],),
-        ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('ok'))],
-      ));
-    }
-    else {
-      Navigator.pop(context);
-      showDialog(context: context, builder: (context) => AlertDialog(content: Text(goldList[0]),));
-    }
-
-  }
   @override
   Widget build(BuildContext context) {
     switch (widget.datatype) {
@@ -1000,16 +721,14 @@ class _DataTableState extends State<DataTable> {
             physics: const BouncingScrollPhysics(),
             children: snapshot.data!.map((dataInstance) {
               return Center(
-                heightFactor: 1,
                 child: Column(
                   children: [
                     Row(
                       children:[
-                        // dataInstance.toMap().forEach((String s,dynamic data) =>Text(data.toString())).toList()
-                        Expanded(flex:3,child: Text(dataType == 'Stock'? dataInstance.stock :dataInstance.amount.toString())),
+                        Expanded(flex:3,child: Text((dataType == 'Stock'? dataInstance.stock :dataInstance.amount.toString())+(dataType == 'Crops'?' Kg':''))),
                         Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency : dataType == 'Cattle' ? dataInstance.type :
-                        dataType == 'Crops' ? dataInstance.type : dataType == 'Stock' ? dataInstance.amount.toString() :dataInstance.unit)),
-                        dataType == 'Stock' ? Expanded(child: Text(dataInstance.price.toString())): const Text(''),
+                        dataType == 'Crops' ? dataInstance.price.toString() : dataType == 'Stock' ? dataInstance.amount.toString() :dataInstance.unit)),
+                        if (dataType == 'Stock') Expanded(child: Text(dataInstance.price.toString())) else if (dataType == 'Crops') Expanded(flex: 3,child: Text(dataInstance.type)),
                         Expanded(
                           flex: 1,
                           child: IconButton(

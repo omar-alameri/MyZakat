@@ -141,7 +141,7 @@ class DatabaseHelper {
       data = await db.query('Currency', where: 'initial = ? AND final = ?', whereArgs: [Final,Initial],orderBy: 'date');
       if (data.isEmpty) {
          // print('nodata');
-        rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
+        rate = await AppManager.googleCurrencyRate(Initial, Final);
         if (rate != -1) {
           db.insert('Currency', {
             'initial': Initial,
@@ -156,9 +156,9 @@ class DatabaseHelper {
     }
       DateTime d = DateTime.parse(data.last['date'] as String);
       //print(d.toString()+DateTime.now().toString());
-      if(DateTime.now().minute - d.minute > 2 ) {
+      if(DateTime.now().minute - d.minute > 1 ) {
         print('outdated');
-        rate = await AppManager.get_CurrencyConversion(Initial, Final, 1);
+        rate = await AppManager.googleCurrencyRate(Initial, Final);
         if(rate !=-1) {
           db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
           return rate;
