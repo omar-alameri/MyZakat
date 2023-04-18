@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 
+import '../shared/DataBase.dart';
+
 class schoolPage extends StatefulWidget {
   const schoolPage({Key? key}) : super(key: key);
 
@@ -9,41 +11,43 @@ class schoolPage extends StatefulWidget {
 }
 
 class _schoolPageState extends State<schoolPage> {
-  dynamic data;
-
-  String language = 'English';
-  Map<String, String> map = {
-    'Arabic': 'اختر مذهبك',
-    'English': 'Choose your School',
-    'Arabic1': 'الشافعي',
-    'English1': "Shafi'i",
-    'Arabic2': 'الحنبلي',
-    'English2': 'Hanbali',
-    'Arabic3': 'المالكي',
-    'English3': 'Maliki',
-    'Arabic4': 'الحنفي',
-    'English4': 'Hanafi'
-  };
+  String selectedLanguage = 'English';
+  List<String> Schools = <String>["Shafi'i", 'Hanbali', 'Maliki', 'Hanafi'];
+  Map<String, String> languageData = {};
   next(String s){
     AppManager.savePref('School', s);
-    Navigator.popAndPushNamed(context,'/data');
+    Navigator.popAndPushNamed(context,'/home');
   }
   @override
-  void didChangeDependencies() {
+  void getData() async {
     AppManager.readPref('School').then((value)
-    {if(value!=null)Navigator.popAndPushNamed(context,'/data');});
-    AppManager.readPref('Language').then((value)
-         {setState(() {data = value;});});
-    super.didChangeDependencies();
+    {if(value!=null)Navigator.popAndPushNamed(context,'/home');});
+    selectedLanguage = await AppManager.readPref('Language');
+    var data = await DatabaseHelper.instance
+        .getLanguageData(language: selectedLanguage, page: 'Schools');
+    for (var school in Schools) {
+      for (var e in data) {
+        if (school == e.name) {
+          languageData[school] = e.data;
+        }
+      }
+    }
+    data = await DatabaseHelper.instance
+        .getLanguageData(language: selectedLanguage, page: 'School');
+    languageData['Question'] = data.first.data;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData.call();
   }
   @override
   Widget build(BuildContext context) {
 
-    if (map[data] == null) {
-      language = map['English']!;
-    } else {
-      language = map[data]!;
-    }
 
     return Scaffold(
       appBar: AppBar(),
@@ -52,7 +56,7 @@ class _schoolPageState extends State<schoolPage> {
         children: [
           Center(
               child: Text(
-            language,
+                languageData['Question']??'Choose your School',
             style: const TextStyle(
               fontSize: 40,
             ),
@@ -65,22 +69,22 @@ class _schoolPageState extends State<schoolPage> {
                   width: 150,
                   child: ElevatedButton(
                     child: Text(
-                      map[(data ?? 'English') + '1']!,
+                      languageData[Schools[0]]??Schools[0],
                       style: const TextStyle(
                           fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                    onPressed: () => next(map[data + '1']!),
+                    onPressed: () => next(Schools[0]),
                   )),
               SizedBox(
                   height: 100,
                   width: 150,
                   child: ElevatedButton(
                     child: Text(
-                      map[(data ?? 'English') + '2']!,
+                      languageData[Schools[1]]??Schools[1],
                       style: const TextStyle(
                           fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                    onPressed: () => next(map[data + '2']!),
+                    onPressed: () => next(Schools[1]),
                   )),
             ],
           ),
@@ -92,22 +96,22 @@ class _schoolPageState extends State<schoolPage> {
                   width: 150,
                   child: ElevatedButton(
                     child: Text(
-                      map[(data ?? 'English') + '3']!,
+                      languageData[Schools[2]]??Schools[2],
                       style: const TextStyle(
                           fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                    onPressed: () => next(map[data['language'] + '3']!),
+                    onPressed: () => next(Schools[2]),
                   )),
               SizedBox(
                   height: 100,
                   width: 150,
                   child: ElevatedButton(
                     child: Text(
-                      map[(data ?? 'English') + '4']!,
+                      languageData[Schools[3]]??Schools[3],
                       style: const TextStyle(
                           fontSize: 25, fontWeight: FontWeight.bold),
                     ),
-                    onPressed: () => next(map[data['language'] + '4']!),
+                    onPressed: () => next(Schools[3]),
                   )),
             ],
           )

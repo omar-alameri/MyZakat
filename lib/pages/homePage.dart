@@ -1,7 +1,7 @@
+import 'package:app2/shared/DataBase.dart';
 import 'package:app2/shared/myDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class homePage extends StatefulWidget {
   const homePage({Key? key}) : super(key: key);
@@ -11,27 +11,48 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
-  String s='';
+  Map<String, String> languageData = {};
+  List<String> words = ['Start','Info'];
+  String language ='';
+  void getData() async{
+    language = await AppManager.readPref('Language');
+    var data = await DatabaseHelper.instance.getLanguageData(language: language, page: 'Home');
+    for (var word in words) {
+      for (var e in data) {
+        if (word == e.name) {
+          languageData[word] = e.data;
+        }
+      }
+    }
+    setState(() {});
+  }
   @override
+  void initState() {
+    super.initState();
+    getData.call();
+  }
 
-
+  @override
   Widget build(BuildContext context) {
-    
-    
     return Scaffold(
-
-      drawer: const myDrawer(),
+      endDrawer: language=='Arabic'? myDrawer(onDispose: (){getData.call();}):null,
+      drawer: language!='Arabic' ? myDrawer(onDispose: (){getData.call();}):null,
       appBar: AppBar(),
       body: Center(
         child: Column(
           children: [
             ElevatedButton(
               onPressed: (){
-                Navigator.pushNamed(context, '/language');
+                Navigator.pushNamed(context, '/data');
               },
-              child: const Text('Start'),
+              child: Text(languageData[words[0]]??words[0]),
             ),
-            Text(s)
+            ElevatedButton(
+              onPressed: (){
+                Navigator.pushNamed(context, '/info');
+              },
+              child: Text(languageData[words[1]]??words[1]),
+            ),
 
           ],
         ),

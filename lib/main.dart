@@ -1,4 +1,5 @@
 import 'package:app2/firebase_options.dart';
+import 'package:app2/pages/InfoPage.dart';
 import 'package:app2/pages/LoginPage.dart';
 import 'package:app2/pages/SignUpPage.dart';
 import 'package:app2/pages/dataPage.dart';
@@ -121,6 +122,8 @@ class _MyappState extends State<Myapp> {
         '/school': (context) => const schoolPage(),
         '/data': (context) => const DataPage(),
         '/zakat': (context) => const ZakatPage(),
+        '/info': (context) => const InfoPage(),
+
       },
     );
   }

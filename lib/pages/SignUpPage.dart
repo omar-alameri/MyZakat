@@ -71,16 +71,22 @@ class _SignUpPage extends State<SignUpPage>{
                       await get_UserInfo();
                       print(SignUpemailController.text.trim() + " " + SignUppasswordController.text.trim());
                       FirebaseAuth.instance.currentUser?.sendEmailVerification();
-                      DeleteAccountTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+                      DeleteAccountTimer = Timer.periodic(const Duration(seconds: 60), (timer) {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text('Email verification link has expired. Please sign up again'),
                           behavior: SnackBarBehavior.floating,
                         ));
                         AppManager.delete_User(SignUpemailController.text.trim());
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        duration: Duration(seconds: 10),
-                        content: CountDown(time: 10,),
+                      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+                        duration: const Duration(seconds: 59),
+                        content: Row(
+                          children: const [
+                            Text('Email verification will expire after '),
+                            CountDown(time: 59,),
+                            Text('.'),
+                          ],
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ));
                       VerifyTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -136,6 +142,7 @@ class _SignUpPage extends State<SignUpPage>{
     if(FirebaseAuth.instance.currentUser?.emailVerified == true){
       //print("User Verified!");
       await signOut();
+      ScaffoldMessenger.of(context).clearSnackBars();
       DeleteAccountTimer.cancel();
       VerifyTimer.cancel();
       Navigator.pop(context);

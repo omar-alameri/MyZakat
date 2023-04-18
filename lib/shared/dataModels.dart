@@ -121,28 +121,28 @@ class Silver {
   }
 }
 
-class Cattle {
+class Livestock {
   final int? id;
   final String userEmail;
   final DateTime date;
   final int amount;
   final String type;
 
-  const Cattle({
+  const Livestock({
     this.id,
     required this.userEmail,
     required this.date,
     required this.amount,
     required this.type,
   });
-  factory Cattle.fromMap(Map<String, dynamic> json) =>  Cattle(
+  factory Livestock.fromMap(Map<String, dynamic> json) =>  Livestock(
     id: json['id'],
     amount: json['amount'],
     type: json['type'],
     userEmail: json['userEmail'],
     date: DateTime.parse(json['date']),
   );
-  // Convert a Cattle into a Map. The keys must correspond to the names of the
+  // Convert a Livestock into a Map. The keys must correspond to the names of the
   // columns in the database.
   Map<String, dynamic> toMap() {
     return {
@@ -158,7 +158,7 @@ class Cattle {
 
   @override
   String toString() {
-    return 'Cattle{id: $id, userEmail: $userEmail, date: $date amount: $amount, type: $type}';
+    return 'Livestock{id: $id, userEmail: $userEmail, date: $date amount: $amount, type: $type}';
   }
 }
 
@@ -244,5 +244,43 @@ class Stock {
   @override
   String toString() {
     return 'Stock{id: $id, userEmail: $userEmail, date: $date amount: $amount, stock: $stock, price: $price}';
+  }
+}
+class Language {
+  final int? id;
+  final String language;
+  final String page;
+  final String name;
+  final String data;
+
+  const Language({
+    this.id,
+    required this.language,
+    required this.page,
+    required this.name,
+    required this.data,
+  });
+  factory Language.fromMap(Map<String, dynamic> json) =>  Language(
+    id: json['id'],
+    language: json['language'],
+    page: json['page'],
+    name: json['name'],
+    data: json['data'],
+  );
+  // Convert a Crops into a Map. The keys must correspond to the names of the
+  // columns in the database.
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'language': language,
+      'page': page,
+      'name': name,
+      'data': data,
+    };
+  }
+  // Implement toString to make it easier to see information
+  @override
+  String toString() {
+    return 'Language{id: $id, language: $language, page: $page name: $name, data: $data}';
   }
 }

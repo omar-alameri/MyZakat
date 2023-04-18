@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 
+import '../shared/DataBase.dart';
+
 class LanguagePage extends StatefulWidget {
   const LanguagePage({Key? key}) : super(key: key);
   @override
@@ -12,6 +14,7 @@ class _LanguagePageState extends State<LanguagePage> {
   String language = 'Choose a language';
 @override
   void didChangeDependencies() {
+  DatabaseHelper.instance.getLanguageData(language: language, page: 'Language');
   AppManager.readPref('Language').then((value)
     {if(value!=null)Navigator.popAndPushNamed(context,'/school');});
     super.didChangeDependencies();
