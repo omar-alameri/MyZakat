@@ -11,7 +11,8 @@ class ZakatPage extends StatefulWidget {
 
 class _ZakatPageState extends State<ZakatPage> {
   List<Widget> widgets =[];
-  int counter = 0;
+  int loadingCounter = 0;
+  bool empty = true;
   late SnackBar snackBar;
   String language = '';
   Map<String, String> languageData={};
@@ -435,33 +436,51 @@ class _ZakatPageState extends State<ZakatPage> {
       languageData[e.name]=e.data;
     }
      calculateMoneyZakat().then((value) {
-       counter++;
-       if(value!=null) widgets.add(value);
+       loadingCounter++;
+       if(value!=null) {
+         empty =false;
+         widgets.add(value);
+       }
        if (mounted) setState(() {});
      });
      calculateGoldZakat().then((value) {
-       counter++;
-       if(value!=null) widgets.add(value);
+       loadingCounter++;
+       if(value!=null) {
+         empty =false;
+         widgets.add(value);
+       }
        if (mounted) setState(() {});
     });
      calculateSilverZakat().then((value) {
-       counter++;
-       if(value!=null) widgets.add(value);
+       loadingCounter++;
+       if(value!=null) {
+         empty =false;
+         widgets.add(value);
+       }
        if (mounted) setState(() {});
      });
      calculateLivestockZakat().then((value) {
-       counter++;
-       if(value!=null) widgets.add(value);
+       loadingCounter++;
+       if(value!=null) {
+         empty =false;
+         widgets.add(value);
+       }
        if (mounted) setState(() {});
      });
      calculateCropsZakat().then((value) {
-       counter++;
-       if(value!=null) widgets.add(value);
+       loadingCounter++;
+       if(value!=null) {
+         empty =false;
+         widgets.add(value);
+       }
        if (mounted) setState(() {});
      });
      calculateStockZakat().then((value){
-       counter++;
-       if(value!=null) widgets.add(value);
+       loadingCounter++;
+       if(value!=null) {
+         empty =false;
+         widgets.add(value);
+       }
        if (mounted) setState(() {});
      });
 
@@ -481,22 +500,23 @@ class _ZakatPageState extends State<ZakatPage> {
       body: SelectableRegion(
         focusNode: FocusNode(),
         selectionControls: MaterialTextSelectionControls(),
-        child: counter>=6 ? ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: widgets.length,
-                  itemBuilder: (BuildContext context,index) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+        child: !(loadingCounter>=6) ? const Center(child: CircularProgressIndicator()): empty ?  Center(child: Text(languageData['No Zakat']??"No Zakat is due"))
+            :ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widgets.length,
+            itemBuilder: (BuildContext context,index) {
+              return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
 
-                        ),
-                      margin: const EdgeInsets.all(8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: widgets[index],
-                      )
-                      );
-                  }):const Center(child: CircularProgressIndicator()),
+                  ),
+                  margin: const EdgeInsets.all(8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: widgets[index],
+                  )
+              );
+            }),
 
         ),
 

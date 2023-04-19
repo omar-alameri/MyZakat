@@ -263,6 +263,8 @@ class DatabaseHelper {
     await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "CamelHint3", data: 'أنثى الإبل التي أتمت ثلاث سنين و دخلت في الرابعة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Zakat', name: "CamelHint4", data: "Female camel that is already four years old").toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "CamelHint4", data: 'أنثى الإبل التي أتمت أربع سنين و دخلت في الخامسة').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Zakat', name: "No Zakat", data: "No Zakat is due").toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "No Zakat", data: 'لا زكاة عليك').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: "Shafi'i", data: "Shafi'i").toMap());
     await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanbali', data: 'Hanbali').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Maliki', data: 'Maliki').toMap());

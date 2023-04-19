@@ -785,6 +785,10 @@ class _DataTableState extends State<DataTable> {
                         if (dataType == 'Stock') Expanded(flex: 3,child: Text(dataInstance.price.toString())) else if (dataType == 'Crops') Expanded(flex: 3,child: Text(languageData[dataInstance.type]??dataInstance.type)),
                         Expanded(
                           flex: 1,
+                          child: Text(dataInstance.date.toString().substring(0,11),style:const TextStyle(fontSize: 10),),
+                        ),
+                        Expanded(
+                          flex: 1,
                           child: IconButton(
                             icon: const Icon(Icons.remove),
                             onPressed: ()  {
