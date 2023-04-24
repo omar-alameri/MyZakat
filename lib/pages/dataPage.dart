@@ -1,9 +1,13 @@
 import 'dart:async';
-
+import 'package:app2/main.dart';
+import 'package:app2/shared/MyNotification.dart';
 import 'package:app2/shared/dataType.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:app2/shared/DataBase.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import 'package:hijri/hijri_calendar.dart';
+import 'package:hijri_picker/hijri_picker.dart';
 
 class DataPage extends StatefulWidget {
   const DataPage({Key? key}) : super(key: key);
@@ -33,11 +37,11 @@ class _DataPageState extends State<DataPage> {
   var widgets = [];
   String language = '';
 
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
+@override
+  void dispose() {
+     super.dispose();
+     scroll.dispose();
   }
-
   @override
   void initState() {
     super.initState();
@@ -132,7 +136,8 @@ class _DataPageState extends State<DataPage> {
                                 setState(() {
                                   selected = newValue;
                                 });
-                              }),
+                              }
+                              ),
                         if (items.isNotEmpty)
                           ElevatedButton(
                               onPressed: () async {
@@ -146,12 +151,49 @@ class _DataPageState extends State<DataPage> {
                               },
                               child: Text(languageData['Add'] ?? "Add")),
                         if (items.isNotEmpty) const VerticalDivider(),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/zakat');
-                            },
-                            child:
-                                Text(languageData['Calculate'] ?? "Calculate")),
+                        PopupMenuButton(
+                          position: PopupMenuPosition.over,
+                          constraints: const BoxConstraints(maxWidth: 125,maxHeight: 115),
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (BuildContext context) {
+                            return [
+                              PopupMenuItem(
+                                  child: ElevatedButton(
+
+                                  onPressed: (){
+                                    Navigator.pushNamed(context, '/zakat');
+                                  },
+                                  child: Text(languageData['Now'] ??'Calculate Now'))),
+                              
+                              PopupMenuItem(
+                                  child: ElevatedButton(
+                                  onPressed: () async {
+                                    HijriCalendar? hdate = await showHijriDatePicker(
+                                        locale: localization.currentLocale,
+                                        context: context,
+                                        initialDate: HijriCalendar.fromDate(DateTime.now()),
+                                        firstDate: HijriCalendar.fromDate(DateTime.now()),
+                                        lastDate: HijriCalendar.fromDate(DateTime.now().add(const Duration(days: 365))));
+                                    DateTime? date = hdate?.hijriToGregorian(hdate.hYear, hdate.hMonth, hdate.hDay);
+                                    if (date!=null) {
+                                      MyNotification.scheduledNotification(date: date,title: 'Zakat Reminder', body: 'Today is your zakat due date.', fln: flutterLocalNotificationsPlugin);
+                                    }
+                                  },
+                                  child: Text(languageData['Reminder'] ??'Set a reminder'))),
+                            ];
+                          },
+                          child: ElevatedButton(
+
+                              onPressed: null,
+                              child: Row(
+                                children: [
+                                  Text(languageData['Calculate'] ?? "Calculate",style: const TextStyle(color: Colors.white)),
+                                  const Icon(Icons.arrow_drop_down,color: Colors.white,),
+
+                                ],
+                              ),
+                          ),
+                        ),
                       ],
                     ),
                     ListView.builder(

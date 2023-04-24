@@ -33,7 +33,7 @@ class _SignUpPage extends State<SignUpPage>{
             children: [
               SizedBox(height: MediaQuery.of(context).size.height*0.35),
               TextField(
-
+                keyboardType: TextInputType.emailAddress,
                 controller: SignUpemailController,
                 cursorColor: Colors.blueGrey,
                 textInputAction: TextInputAction.next,
@@ -95,6 +95,10 @@ class _SignUpPage extends State<SignUpPage>{
 
                   }
                   else{
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Email invalid format or The Email is already used for another account'),
+                      behavior: SnackBarBehavior.floating,
+                    ));
                       print("Email invalid format or The Email is already used for another account");
                       if(signedUp) {
                         Delete_User_Info(SignUpemailController.text.trim());
@@ -151,11 +155,19 @@ class _SignUpPage extends State<SignUpPage>{
 
   @override
   void dispose(){
+    SignUpemailController.dispose();
+    SignUppasswordController.dispose();
     DeleteAccountTimer.cancel();
     VerifyTimer.cancel();
+    // if(!FirebaseAuth.instance.currentUser!.emailVerified) {
+    //   FirebaseAuth.instance.currentUser?.reload().then((value) {
+    //   AppManager.delete_User(SignUpemailController.text.trim());
+    //   });
+    // }
     super.dispose();
 
   }
+
 }
 
 

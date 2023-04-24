@@ -67,6 +67,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.35),
           TextField(
+            keyboardType: TextInputType.emailAddress,
             controller: emailController,
             cursorColor: Colors.blue,
             textInputAction: TextInputAction.next,

@@ -1,8 +1,9 @@
+import 'package:app2/main.dart';
 import 'package:app2/shared/DataBase.dart';
 import 'package:app2/shared/myDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
-import 'package:hijri/hijri_calendar.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class homePage extends StatefulWidget {
   const homePage({Key? key}) : super(key: key);
@@ -29,12 +30,14 @@ class _homePageState extends State<homePage> {
   }
   @override
   void initState() {
+
     super.initState();
     getData.call();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       endDrawer: language=='Arabic'? myDrawer(onDispose: (){getData.call();}):null,
       drawer: language!='Arabic' ? myDrawer(onDispose: (){getData.call();}):null,

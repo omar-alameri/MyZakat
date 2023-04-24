@@ -486,7 +486,6 @@ class _ZakatPageState extends State<ZakatPage> {
 
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

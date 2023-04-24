@@ -18,7 +18,7 @@ class _schoolPageState extends State<schoolPage> {
     AppManager.savePref('School', s);
     Navigator.popAndPushNamed(context,'/home');
   }
-  @override
+
   void getData() async {
     AppManager.readPref('School').then((value)
     {if(value!=null)Navigator.popAndPushNamed(context,'/home');});
@@ -43,7 +43,7 @@ class _schoolPageState extends State<schoolPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getData.call();
+    getData();
   }
   @override
   Widget build(BuildContext context) {

@@ -33,6 +33,13 @@ class _DataTypeState extends State<DataType> {
       return oldValue;
     }
   });
+  @override
+  void dispose() {
+    input1.dispose();
+    input2.dispose();
+    input3.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -80,113 +87,81 @@ class _DataTypeState extends State<DataType> {
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
-                child: TapRegion(
-                  // onTapOutside: (p) async{
-                  //   print('outside');
-                  //   List<String> list= await AppManager.search_Currency(input2.text);
-                  //   if(!list.contains(input2.text)) {
-                  //     var snackBar = const SnackBar(
-                  //       content: Center(child: Text('Invalid Currency')),
-                  //       behavior: SnackBarBehavior.floating,
-                  //     );
-                  //     if(context.mounted) {
-                  //       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  //     }
-                  //   } else{
-                  //     selected = input2.text;
-                  //   }
-                  // },
-                  child: DropdownSearch<String>(
+                child: DropdownSearch<String>(
 
 
-                    onBeforePopupOpening: (x) async{
-                      if(selected == null && input2.text=='') {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    },
-                    asyncItems: (x) async{
-                      var s = await AppManager.search_Currency(selected??input2.text);
-                      return s;
-                    },
-                    onChanged: (s){
-                      setState(() {
-                        input2.text = s??'';
-                        selected = s??'';
-                      });
-                    },
-                    dropdownBuilder: (context,s){
-                      return TextField(
-                        // onTapOutside: (p)async{
-                        //   print('outside');
-                        //   List<String> list= await AppManager.search_Currency(input2.text);
-                        //   if(!list.contains(input2.text)) {
-                        //     var snackBar = const SnackBar(
-                        //       content: Center(child: Text('Invalid Currency')),
-                        //       behavior: SnackBarBehavior.floating,
-                        //     );
-                        //     if(context.mounted) {
-                        //       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        //     }
-                        //   } else{
-                        //     selected = input2.text;
-                        //   }
-                        // },
-                        onSubmitted: (s) async{
-                          print('submit');
+                  onBeforePopupOpening: (x) async{
+                    if(selected == null && input2.text=='') {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  },
+                  asyncItems: (x) async{
+                    var s = await AppManager.search_Currency(selected??input2.text);
+                    return s;
+                  },
+                  onChanged: (s){
+                    setState(() {
+                      input2.text = s??'';
+                      selected = s??'';
+                    });
+                  },
+                  dropdownBuilder: (context,s){
+                    return TextField(
+                      onSubmitted: (s) async{
+                        print('submit');
 
-                          List<String> list= await AppManager.search_Currency(s);
-                          if(!list.contains(s)) {
-                            var snackBar = const SnackBar(
-                              content: Center(child: Text('Invalid Currency')),
-                              behavior: SnackBarBehavior.floating,
-                            );
-                            if(context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            }
-                          } else{
-                            selected = s;
+                        List<String> list= await AppManager.search_Currency(s);
+                        if(!list.contains(s)) {
+                          var snackBar = const SnackBar(
+                            content: Center(child: Text('Invalid Currency')),
+                            behavior: SnackBarBehavior.floating,
+                          );
+                          if(context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           }
-                        },
-                        textInputAction: TextInputAction.search,
-                        style: const TextStyle(
-                          fontSize:20,
-                        ),
-                        decoration: const InputDecoration(
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          isCollapsed: true,
-                        ),
-                        controller: input2,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
-                          TextInputFormatter.withFunction((oldValue, newValue)
-                          {
-                            if(newValue.text.length <4) {
-                              return TextEditingValue(text:newValue.text.toUpperCase(),selection: newValue.selection);
-                            }
-                            return oldValue;
-                          })
-                        ],
-                      );
-                    },
-                    selectedItem: selected,
-                    dropdownButtonProps:  const DropdownButtonProps(
-                        icon: Icon(Icons.search),
-                        padding: EdgeInsets.symmetric(vertical: 4)
-                    ),
-
-                    dropdownDecoratorProps:  DropDownDecoratorProps(
-                      baseStyle: const TextStyle(fontSize:20),
-                      dropdownSearchDecoration: InputDecoration(
-                        labelText: languageData['Currency']??'Currency',
+                        } else{
+                          selected = s;
+                        }
+                      },
+                      textInputAction: TextInputAction.search,
+                      style: const TextStyle(
+                        fontSize:20,
                       ),
-                    ),
-
-
+                      decoration: const InputDecoration(
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                        isCollapsed: true,
+                      ),
+                      controller: input2,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z]')),
+                        TextInputFormatter.withFunction((oldValue, newValue)
+                        {
+                          if(newValue.text.length <4) {
+                            return TextEditingValue(text:newValue.text.toUpperCase(),selection: newValue.selection);
+                          }
+                          return oldValue;
+                        })
+                      ],
+                    );
+                  },
+                  selectedItem: selected,
+                  dropdownButtonProps:  const DropdownButtonProps(
+                      icon: Icon(Icons.search),
+                      padding: EdgeInsets.symmetric(vertical: 4)
                   ),
+
+                  dropdownDecoratorProps:  DropDownDecoratorProps(
+                    baseStyle: const TextStyle(fontSize:20),
+                    dropdownSearchDecoration: InputDecoration(
+                      labelText: languageData['Currency']??'Currency',
+                    ),
+                  ),
+
+
                 ),
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:app2/main.dart';
 import 'package:app2/pages/LoginPage.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,11 @@ class _myDrawerState extends State<myDrawer> {
   String selectedLanguage = 'English';
   String? selectedSchool;
   TextEditingController selectedCurrency = TextEditingController();
+  @override
+  void dispose() {
+    selectedCurrency.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -119,6 +125,11 @@ class _myDrawerState extends State<myDrawer> {
                     selectedLanguage = newValue ?? '';
                     AppManager.savePref('Language', selectedLanguage);
                     getData.call();
+                    if (selectedLanguage=='Arabic') {
+                      localization.translate('ar');
+                    } else {
+                      localization.translate('en');
+                    }
                     widget.onDispose.call();
                   });
                   Provider.of<AppManager>(context, listen: false).notify.call();

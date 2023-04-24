@@ -143,6 +143,10 @@ class DatabaseHelper {
     await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Select', data: 'اختر نوع').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Add', data: 'Add').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Add', data: 'اضف').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Now', data: 'Calculate Now').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Now', data: 'احسب الآن').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Reminder', data: 'Set a Reminder').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Reminder', data: 'عين تذكيراً').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Calculate', data: 'Calculate Zakat').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Calculate', data: 'احسب الزكاة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Gold', name: 'Unit', data: 'Unit').toMap());
