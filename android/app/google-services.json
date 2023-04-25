@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "977573047128",
+    "project_id": "zakahapp-194c7",
+    "storage_bucket": "zakahapp-194c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977573047128:android:25816bb50b28f6836e932d",
+        "android_client_info": {
+          "package_name": "com.example.app2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977573047128-5c8ndtotquahh7b1bnsj0ufg4ot97usd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVG8xkAQbbsbqWZtZwMwSYEBtZEIsRtE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977573047128-5c8ndtotquahh7b1bnsj0ufg4ot97usd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "977573047128-maej7flk8oksf5qjd9kugf9k17265akb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.stocksZakah"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977573047128:android:0090c7131ab8f43f6e932d",
+        "android_client_info": {
+          "package_name": "com.example.stocks_zakah"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977573047128-5c8ndtotquahh7b1bnsj0ufg4ot97usd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVG8xkAQbbsbqWZtZwMwSYEBtZEIsRtE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977573047128-5c8ndtotquahh7b1bnsj0ufg4ot97usd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "977573047128-maej7flk8oksf5qjd9kugf9k17265akb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.stocksZakah"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
