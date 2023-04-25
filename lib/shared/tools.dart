@@ -34,7 +34,6 @@ class AppManager extends ChangeNotifier {
 
   static Future readPref(String key) async {
     final prefs = await SharedPreferences.getInstance();
-
     return prefs.get(key);
   }
 
@@ -205,7 +204,7 @@ class AppManager extends ChangeNotifier {
       // print("From USD to ${finalCurrency.substring(0, 3)} : ${moneyInDesiredCurrency.toString()} ${finalCurrency.substring(0, 3)}");
       print(DateTime.now().second - d.second);
       return moneyInDesiredCurrency;
-    } on Exception catch (e) {
+    } on Exception {
       return -1;
     }
   }
@@ -224,7 +223,7 @@ class AppManager extends ChangeNotifier {
           .toList();
       print(DateTime.now().second - d.second);
       return double.parse(titles[0]);
-    } on Exception catch (e) {
+    } on Exception {
       return -1;
     }
   }
@@ -255,16 +254,6 @@ class Hint extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.grey.withOpacity(0.9),
           borderRadius: BorderRadius.circular(22)),
-      // ShapeDecoration(
-      //   color: Colors.grey.withOpacity(0.9),
-      //   shape: ShapeOfViewBorder(shape: BubbleShape(
-      //       position: BubblePosition.Top,
-      //       arrowPositionPercent: 0.5,
-      //       borderRadius: 20,
-      //       arrowHeight: 5,
-      //       arrowWidth: 5
-      //   ),),
-      // ),
       textStyle: const TextStyle(fontSize: 15, color: Colors.white),
       child: Row(
           children: reversed

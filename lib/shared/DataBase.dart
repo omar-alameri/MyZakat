@@ -97,6 +97,19 @@ class DatabaseHelper {
       )      
       ''');
     await db.execute('''
+      CREATE TABLE Zakat(
+          $id,
+          Gold $double,
+          Silver $double,
+          Stock $double,
+          Livestock $String,
+          Money $double,
+          Crops $double,
+          userEmail $String,
+          date Date
+      )      
+      ''');
+    await db.execute('''
       CREATE TABLE Language(
           $id,
           language $string,
@@ -147,8 +160,10 @@ class DatabaseHelper {
     await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Now', data: 'احسب الآن').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Reminder', data: 'Set a Reminder').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Reminder', data: 'عين تذكيراً').toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Calculate', data: 'Calculate Zakat').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Calculate', data: 'احسب الزكاة').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'History', data: 'History').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'History', data: 'سجل').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Calculate', data: 'Zakat').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Calculate', data: 'الزكاة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Gold', name: 'Unit', data: 'Unit').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Gold', name: 'Unit', data: 'النوع').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Gold', name: 'Weight', data: 'Weight (Gram)').toMap());
@@ -269,23 +284,55 @@ class DatabaseHelper {
     await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "CamelHint4", data: 'أنثى الإبل التي أتمت أربع سنين و دخلت في الخامسة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Zakat', name: "No Zakat", data: "No Zakat is due").toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "No Zakat", data: 'لا زكاة عليك').toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: "Shafi'i", data: "Shafi'i").toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanbali', data: 'Hanbali').toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Maliki', data: 'Maliki').toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanafi', data: 'Hanafi').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: "Shafi'i", data: 'الشافعية: أن يكون'
-        ' مما يقتات اختياراً: كالبر، والشعير، والأرز، والذرة، والعدس، والحمص والفول؛ والدخن، فإن لم يكن صالحاً للاقتيات: كالحلبة، والكراويا،'
-        ' والكزبرة والكتان، فلا زكاة فيه؛ يكون نصاباً فأكثر؛ ولا يزكى من الثمار إلا العنب أو الرطب، فلا زكاة في الخوخ، والمشمش، والجوز، واللوز، والتين').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanbali', data: 'الحنابلة: تجب زكاة الزروع والثمار،'
-        ' بشرطين زيادة على ما تقدم: الأول: أن تكون صالحة للادخار، الثاني: أن تبلغ نصاباً وقت وجوب الزكاة.فلا فرق فيما تجب فيه الزكاة بين'
-        ' كونه حباً أو غيره، مأكولاً أو غير مأكول: كالقمح، والفول، وحب الرشا، وحب الفجل، وحب الخردل، والزعتر، والأشنان وورق الشجر المقصود ...كورق السدر، والآس،'
-        ' وكتمر، وزبيب، ولوز، وفستق، وبندق، أما العناب والزيتون، فلا تجب الزكاة فيهما، كما تجب في الجوز الهندي، والتين، والتوت، وبقية الفواكه وقصب السكر، '
-        'واللفت، والكرنب، والبصل، والفجل، والورس، والنيلة، والحناء، والبرتقال، والقطن، والكتان، والزعفران، والعصفر، لأن هذه الأشياء لم يتحقق فيها الشرط الأول،').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Maliki', data: 'المالكي').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanafi', data: 'الحنفية:  يخرج زكاة كل ما تخرجه الأرض من الحنطة والشعير، والدخن، والأرز، وأصناف'
-        ' الحبوب والبقول، والرياحين، والورد وقصب السكر، والبطيخ والقثاء، والخيار، والباذنجان، والعصفر، والتمر والعنب وغير ذلك، سواء كانت له ثمرة تبقى'
-        ' أو لا، وسواء كان قليلاً أو كثيراًالحنفية:  يخرج زكاة كل ما تخرجه الأرض من الحنطة والشعير، والدخن، والأرز، وأصناف الحبوب والبقول، والرياحين'
-        '، والورد وقصب السكر، والبطيخ والقثاء، والخيار، والباذنجان، والعصفر، والتمر والعنب وغير ذلك، سواء كانت له ثمرة تبقى أو لا، وسواء كان قليلاً أو كثيراً.').toMap());
+    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: "Shafi'i", data: "Shafi'i").toMap());
+    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanbali', data: 'Hanbali').toMap());
+    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Maliki', data: 'Maliki').toMap());
+    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanafi', data: 'Hanafi').toMap());
+    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: "Shafi'i", data: 'الشافعية: أن يكون'
+    //     ' مما يقتات اختياراً: كالبر، والشعير، والأرز، والذرة، والعدس، والحمص والفول؛ والدخن، فإن لم يكن صالحاً للاقتيات: كالحلبة، والكراويا،'
+    //     ' والكزبرة والكتان، فلا زكاة فيه؛ يكون نصاباً فأكثر؛ ولا يزكى من الثمار إلا العنب أو الرطب، فلا زكاة في الخوخ، والمشمش، والجوز، واللوز، والتين').toMap());
+    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanbali', data: 'الحنابلة: تجب زكاة الزروع والثمار،'
+    //     ' بشرطين زيادة على ما تقدم: الأول: أن تكون صالحة للادخار، الثاني: أن تبلغ نصاباً وقت وجوب الزكاة.فلا فرق فيما تجب فيه الزكاة بين'
+    //     ' كونه حباً أو غيره، مأكولاً أو غير مأكول: كالقمح، والفول، وحب الرشا، وحب الفجل، وحب الخردل، والزعتر، والأشنان وورق الشجر المقصود ...كورق السدر، والآس،'
+    //     ' وكتمر، وزبيب، ولوز، وفستق، وبندق، أما العناب والزيتون، فلا تجب الزكاة فيهما، كما تجب في الجوز الهندي، والتين، والتوت، وبقية الفواكه وقصب السكر، '
+    //     'واللفت، والكرنب، والبصل، والفجل، والورس، والنيلة، والحناء، والبرتقال، والقطن، والكتان، والزعفران، والعصفر، لأن هذه الأشياء لم يتحقق فيها الشرط الأول،').toMap());
+    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Maliki', data: 'المالكي').toMap());
+    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanafi', data: 'الحنفية:  يخرج زكاة كل ما تخرجه الأرض من الحنطة والشعير، والدخن، والأرز، وأصناف'
+    //     ' الحبوب والبقول، والرياحين، والورد وقصب السكر، والبطيخ والقثاء، والخيار، والباذنجان، والعصفر، والتمر والعنب وغير ذلك، سواء كانت له ثمرة تبقى'
+    //     ' أو لا، وسواء كان قليلاً أو كثيراًالحنفية:  يخرج زكاة كل ما تخرجه الأرض من الحنطة والشعير، والدخن، والأرز، وأصناف الحبوب والبقول، والرياحين'
+    //     '، والورد وقصب السكر، والبطيخ والقثاء، والخيار، والباذنجان، والعصفر، والتمر والعنب وغير ذلك، سواء كانت له ثمرة تبقى أو لا، وسواء كان قليلاً أو كثيراً.').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'MoneyInfo', name: 'All', data: '''- Nisab : the price of 85 grams of gold.
+    The zakat is 2.5% of what one owns, for ease of calculation it is the amount of money devised by 40.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'MoneyInfo', name: 'All', data: '''نصاب المال 85 غرام من الذهب * سعر الذهب.
+و زكاته %2.5 من المال ; اي مقدار المال مقسوم على .40''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'GoldInfo', name: 'All', data: '''- Nisab : 85 grams of gold.
+    The zakat is 2.5% of what one owns of gold(or its equivalent in money).''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'GoldInfo', name: 'All', data: '''نصاب الذهب 85 غرام.
+و زكاته %2.5 من الذهب (أو ما يساويه من المال).''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'SilverInfo', name: 'All', data: '''- Nisab : 595 grams of silver. 
+The zakat is 2.5% of what one owns of silver (or its equivalent in money).''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'SilverInfo', name: 'All', data: '''نصاب الفضة 595 غرام.
+و زكاته %2.5 من الفضة (أو ما يساويه من المال).''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'LivestockInfo', name: 'All', data: '''There is no particular Nisab , but one hand over based on how much he owns as
+    shown in the below table( or its equivalent in money).
+    It must be noted that only grazing livestock most of the year are required for zakat, meaning the ones that eat from the earth and are not paid to eat.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'LivestockInfo', name: 'All', data: '''الزكاة فقط في السائمة; اي التي ترعى، و شرط انها رعت اكثر العام (الزكاة قد تكون بما يساويها من المال). ''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'LivestockInfo', name: 'Maliki', data: '''There is no particular Nisab , but one hand over based on how much he owns as shown in the below table( or its equivalent in money). 
+    It must be noted that both grazing and non -grazing livestock are required for Zakat.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'LivestockInfo', name: 'Maliki', data: '''الزكاة في السائمة; اي التي ترعى، و شرط انها رعت اكثر العام، و المعلوفة; اي التي ينفق عليها صاحبها و لا ترعى (الزكاة قد تكون بما يساويها من المال). ''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'All', data: '''- Nisab: 654 kg. 
+The zakat is 10% of what one owns if it was watered by rain, and 5% if it was watered by irrigation.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'All', data: '''نصابه 5 اوسق، اي 654 كغ.
+    و زكاته %10 اذا سقيت بالطر و %5 اذا سقيت بالري. ''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanafi', data: '''- Nisab: There is no Nisab. 
+The zakat is 10% of what one owns if it was watered by rain, and 5% if it was watered by irrigation.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanafi', data: '''لا نصاب.
+    و زكاته %10 اذا سقيت بالطر و %5 اذا سقيت بالري.''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'StockInfo', name: 'All', data: '''- Nisab: There is no Nisab. 
+The zakat is 2.5% of the price of his shares, if he trades in them, i.e. buying and selling.
+But if he is saving it for a profit such as rent, then the zakat is 2.5% of the profits.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'StockInfo', name: 'All', data: '''زكاته %2.5 من سعر اسهمه، اذا كان يتاجر فيها اي للبيع و الشراء.
+    أما إذا كان يدخرها من أجل الأرباح كالإيجار فالزكاة %2.5 من الأرباح.''').toMap());
 
   }
   Future<List<dynamic>> getData({required String userEmail,required String type}) async {
@@ -305,6 +352,8 @@ class DatabaseHelper {
         return data.isNotEmpty ? data.map((c) => Crops.fromMap(c)).toList() : [];
       case 'Stock':
         return data.isNotEmpty ? data.map((c) => Stock.fromMap(c)).toList() : [];
+      case 'Zakat':
+        return data.isNotEmpty ? data.map((c) => Zakat.fromMap(c)).toList() : [];
       default : return [];
     }
   } catch(e){
@@ -313,6 +362,7 @@ class DatabaseHelper {
   }
   Future<List<Language>> getLanguageData ({required String language,required String page} ) async {
     Database db = await instance.database;
+
     // print('done');
     var data = await db.query('Language', where: 'language = ? and page = ?', whereArgs: [language,page]);
     return data.isNotEmpty ? data.map((c) => Language.fromMap(c)).toList() : [];

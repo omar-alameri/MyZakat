@@ -143,7 +143,7 @@ class _InfoState extends State<Info> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Text.rich(TextSpan(text: languageData[School] ?? 'No Data'),
+        child: Text.rich(TextSpan(text: languageData[School] ?? languageData['All'] ?? 'No Data'),
             textDirection:
                 language == 'Arabic' ? TextDirection.rtl : TextDirection.ltr),
       ),

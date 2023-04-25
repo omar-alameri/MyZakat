@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
-
 import '../shared/DataBase.dart';
 
 class schoolPage extends StatefulWidget {

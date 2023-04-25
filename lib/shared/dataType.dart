@@ -310,6 +310,7 @@ class _DataTypeState extends State<DataType> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(),
                 child: DropdownButton(
+                    alignment: Alignment.center,
                     underline: const Text(''),
                     isExpanded: true,
                     borderRadius: BorderRadius.circular(5),
@@ -627,38 +628,6 @@ class _DataTypeState extends State<DataType> {
                 ],
               ),
             ),
-            // Expanded(
-            //   flex: 2,
-            //   child: Padding(
-            //     padding: const EdgeInsets.symmetric(),
-            //     child: DropdownButton(
-            //         underline: const Text(''),
-            //         isExpanded: true,
-            //         borderRadius: BorderRadius.circular(10),
-            //         hint: const Text('Irrigation'),
-            //         value: selected,
-            //         items: const [
-            //           DropdownMenuItem(
-            //             value: 'Without cost',
-            //             child: Text('Without cost'),
-            //           ),
-            //           DropdownMenuItem(
-            //             value: 'With cost',
-            //             child: Text('With cost'),
-            //           ),
-            //           DropdownMenuItem(
-            //             value: 'Both methods alike',
-            //             child: Text('Both methods alike'),
-            //           ),
-            //
-            //         ],
-            //         onChanged: (var newValue) {
-            //           setState(() {
-            //             selected = newValue;
-            //           });
-            //         }),
-            //   ),
-            // ),
             Expanded(
               flex: 1,
               child: IconButton(

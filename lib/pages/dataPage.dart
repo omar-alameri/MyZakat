@@ -5,7 +5,6 @@ import 'package:app2/shared/dataType.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:app2/shared/DataBase.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:hijri_picker/hijri_picker.dart';
 
@@ -153,7 +152,7 @@ class _DataPageState extends State<DataPage> {
                         if (items.isNotEmpty) const VerticalDivider(),
                         PopupMenuButton(
                           position: PopupMenuPosition.over,
-                          constraints: const BoxConstraints(maxWidth: 125,maxHeight: 115),
+                          constraints: const BoxConstraints(maxWidth: 125,maxHeight: 160,minHeight: 155),
                           padding: EdgeInsets.zero,
                           itemBuilder: (BuildContext context) {
                             return [
@@ -180,6 +179,13 @@ class _DataPageState extends State<DataPage> {
                                     }
                                   },
                                   child: Text(languageData['Reminder'] ??'Set a reminder'))),
+                              PopupMenuItem(
+                                  child: ElevatedButton(
+
+                                      onPressed: (){
+                                        Navigator.pushNamed(context, '/zakatHistory');
+                                      },
+                                      child: Text(languageData['History'] ??'History'))),
                             ];
                           },
                           child: ElevatedButton(
@@ -229,7 +235,7 @@ class _DataPageState extends State<DataPage> {
                               });
                             }
                           },
-                          children: [DataType(datatype: activeItems[index])],
+                            children: [DataType(datatype: activeItems[index])],
                         ));
                       },
                     ),

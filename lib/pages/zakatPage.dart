@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../shared/DataBase.dart';
 import '../shared/tools.dart';
+import '../shared/dataModels.dart';
 
 class ZakatPage extends StatefulWidget {
   const ZakatPage({Key? key}) : super(key: key);
@@ -11,14 +12,16 @@ class ZakatPage extends StatefulWidget {
 
 class _ZakatPageState extends State<ZakatPage> {
   List<Widget> widgets =[];
+  Map<String,dynamic> zakat = {};
   int loadingCounter = 0;
   bool empty = true;
   late SnackBar snackBar;
   String language = '';
   Map<String, String> languageData={};
+  String userEmail = '';
   @override
   void initState() {
-    // TODO: implement initState
+    AppManager.readPref('userEmail').then((value) => userEmail=value);
     super.initState();
     getData.call();
   }
@@ -26,7 +29,7 @@ class _ZakatPageState extends State<ZakatPage> {
   Future<Widget?> calculateMoneyZakat() async {
     double total = 0.0;
     String preferredCurrency = await AppManager.readPref('pCurrency');
-    String userEmail = await AppManager.readPref('userEmail');
+    // String userEmail = await AppManager.readPref('userEmail');
     List<dynamic> list = await DatabaseHelper.instance.getData(userEmail: userEmail,type:'Money');
     for (var money in list){
       total +=  await DatabaseHelper.instance.convertRate(money.currency,preferredCurrency)*money.amount;
@@ -36,6 +39,7 @@ class _ZakatPageState extends State<ZakatPage> {
       double goldPrice = double.parse(gold.substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
       if (total>goldPrice*85) {
+        zakat['Money'] = languageData['Money']??'Money Zakat: ${(total*0.025).toStringAsFixed(2)} $preferredCurrency';
         return Row(
               mainAxisAlignment: language=='Arabic'?MainAxisAlignment.end:MainAxisAlignment.start,
               children: language=='Arabic'?[
@@ -46,7 +50,7 @@ class _ZakatPageState extends State<ZakatPage> {
                 Text('${(total*0.025).toStringAsFixed(2)} $preferredCurrency')
               ],
             );
-      }
+      } zakat['Money'] ='';
     }
     else {
       snackBar =  const SnackBar(
@@ -58,7 +62,7 @@ class _ZakatPageState extends State<ZakatPage> {
   Future<Widget?> calculateStockZakat() async {
     double total = 0.0;
     String preferredCurrency = await AppManager.readPref('pCurrency');
-    String userEmail = await AppManager.readPref('userEmail');
+    // String userEmail = await AppManager.readPref('userEmail');
     List<dynamic> list = await DatabaseHelper.instance.getData(userEmail:userEmail,type:'Stock');
     List<String> stockPrice;
     for (var stock in list){
@@ -70,6 +74,7 @@ class _ZakatPageState extends State<ZakatPage> {
       double goldPrice = double.parse(gold.substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
       if (total>goldPrice*85) {
+        zakat['Stock'] = languageData['Stock']??'Stock Zakat: ${(total*0.025).toStringAsFixed(2)} $preferredCurrency';
         return Row(
             mainAxisAlignment: language=='Arabic'?MainAxisAlignment.end:MainAxisAlignment.start,
             children: language=='Arabic'?[
@@ -80,7 +85,7 @@ class _ZakatPageState extends State<ZakatPage> {
                 Text('${(total*0.025).toStringAsFixed(2)} $preferredCurrency')
               ],
           );
-      }
+      } zakat['Stock'] ='';
     }
     else {
       snackBar =  const SnackBar(
@@ -92,7 +97,7 @@ class _ZakatPageState extends State<ZakatPage> {
   Future<Widget?> calculateGoldZakat() async {
     double total = 0.0;
     String preferredCurrency = await AppManager.readPref('pCurrency');
-    String userEmail = await AppManager.readPref('userEmail');
+    // String userEmail = await AppManager.readPref('userEmail');
     List<dynamic> list = await DatabaseHelper.instance.getData(userEmail:userEmail,type:'Gold');
     for (var e in list) {
       if (e.unit == 'Gram K24') {
@@ -110,6 +115,7 @@ class _ZakatPageState extends State<ZakatPage> {
       double goldPrice = double.parse(goldList.substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
       if (total>85) {
+        zakat['Gold'] = languageData['Gold']??'Gold Zakat: ${(total*0.025*goldPrice).toStringAsFixed(2)} $preferredCurrency';
         return Row(
             mainAxisAlignment: language=='Arabic'?MainAxisAlignment.end:MainAxisAlignment.start,
             children: language=='Arabic'?[
@@ -120,7 +126,7 @@ class _ZakatPageState extends State<ZakatPage> {
               Text('${(total*0.025*goldPrice).toStringAsFixed(2)} $preferredCurrency')
             ],
         );
-      }
+      } zakat['Gold'] ='';
     }
     else {
       snackBar =  const SnackBar(
@@ -132,7 +138,7 @@ class _ZakatPageState extends State<ZakatPage> {
   Future<Widget?> calculateSilverZakat() async {
     double total = 0.0;
     String preferredCurrency = await AppManager.readPref('pCurrency');
-    String userEmail = await AppManager.readPref('userEmail');
+    // String userEmail = await AppManager.readPref('userEmail');
     List<dynamic> list = await DatabaseHelper.instance.getData(userEmail:userEmail,type:'Silver');
     for (var e in list) {
       if (e.unit == 'Gram K99.9') {
@@ -152,6 +158,7 @@ class _ZakatPageState extends State<ZakatPage> {
       double silverPrice = double.parse(silver);
       silverPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*silverPrice;
       if (total>595) {
+        zakat['Silver'] = languageData['Silver']??'Silver Zakat: ${(total*0.025*silverPrice).toStringAsFixed(2)} $preferredCurrency';
         return Row(
             mainAxisAlignment: language=='Arabic'?MainAxisAlignment.end:MainAxisAlignment.start,
             children: language=='Arabic'?[
@@ -162,7 +169,7 @@ class _ZakatPageState extends State<ZakatPage> {
                 Text('${(total*0.025*silverPrice).toStringAsFixed(2)} $preferredCurrency')
             ],
           );
-      }
+      } zakat['Silver'] ='';
     }
     else {
       snackBar =  const SnackBar(
@@ -176,7 +183,7 @@ class _ZakatPageState extends State<ZakatPage> {
     double totalZakatInKg = 0.0;
     double totalZakatInMoney = 0.0;
     String preferredCurrency = await AppManager.readPref('pCurrency');
-    String userEmail = await AppManager.readPref('userEmail');
+    // String userEmail = await AppManager.readPref('userEmail');
     List<dynamic> list = await DatabaseHelper.instance.getData(userEmail:userEmail,type:'Crops');
     for (var e in list) {
       total += e.amount;
@@ -190,6 +197,7 @@ class _ZakatPageState extends State<ZakatPage> {
 
     }
     if(total>653 ) {
+      zakat['Crops'] = languageData['Crops']??'Crops Zakat: ${(totalZakatInKg).toStringAsFixed(2)} Kg ${languageData['or']??'or'} ${(totalZakatInMoney).toStringAsFixed(2)} $preferredCurrency';
       return Row(
         mainAxisAlignment: language=='Arabic'?MainAxisAlignment.end:MainAxisAlignment.start,
         children: language=='Arabic'?[
@@ -200,12 +208,12 @@ class _ZakatPageState extends State<ZakatPage> {
           Text('${(totalZakatInKg).toStringAsFixed(2)}Kg ${languageData['or']??'or'} ${(totalZakatInMoney).toStringAsFixed(2)}$preferredCurrency')
         ],
       );
-    }
+    } zakat['Crops'] ='';
 
 
   }
   Future<Widget?> calculateLivestockZakat() async {
-    String userEmail = await AppManager.readPref('userEmail');
+    // String userEmail = await AppManager.readPref('userEmail');
     List<dynamic> list = await DatabaseHelper.instance.getData(
         userEmail:userEmail, type:'Livestock');
     int cow = 0;
@@ -387,6 +395,12 @@ class _ZakatPageState extends State<ZakatPage> {
       Hints.add(camelHint3);
     }
     if (CowMessage1 != nothing||SheepMessage != nothing||CamelMessage1 != nothing) {
+      zakat['Livestock'] = languageData['Livestock']??'Livestock Zakat:';
+      if (CowMessage1 != nothing)zakat['Livestock'] += '\n\t${languageData['Cow']??'Cow'}: $CowMessage1';
+      if (CowMessage2 != nothing)zakat['Livestock'] += CowMessage2;
+      if (SheepMessage != nothing)zakat['Livestock'] += '\n\t${languageData['Sheep']??'Sheep'}: $SheepMessage';
+      if (CamelMessage1 != nothing)zakat['Livestock'] += '\n\t${languageData['Camel']??'Camel'}: $CamelMessage1';
+      if (CamelMessage2 != nothing)zakat['Livestock'] += CamelMessage2;
       return Column(
         crossAxisAlignment:language=='Arabic'?CrossAxisAlignment.end:CrossAxisAlignment.start ,
         mainAxisSize: MainAxisSize.min,
@@ -425,63 +439,44 @@ class _ZakatPageState extends State<ZakatPage> {
             ]),
         ],
       );
-    }
+    } zakat['Livestock'] ='';
   }
+  void addData(dynamic value){
+  loadingCounter++;
+  if(loadingCounter>=6) {
+  DatabaseHelper.instance.addData(
+  Zakat(Gold: zakat['Gold'], Silver: zakat['Silver'], Stock: zakat['Stock'], Crops: zakat['Crops'], Livestock: zakat['Livestock'], Money: zakat['Money'], userEmail: userEmail, date: DateTime.now()));
+  }
+  if(value!=null) {
+  empty =false;
+  widgets.add(value);
+  }
+  if (mounted) setState(() {});
+}
 
   void getData() async{
-    language = await AppManager.readPref('Language');
     setState(() {});
     var data = await DatabaseHelper.instance.getLanguageData(language:language, page: 'Zakat');
     for (var e in data) {
       languageData[e.name]=e.data;
     }
      calculateMoneyZakat().then((value) {
-       loadingCounter++;
-       if(value!=null) {
-         empty =false;
-         widgets.add(value);
-       }
-       if (mounted) setState(() {});
+       addData(value);
      });
      calculateGoldZakat().then((value) {
-       loadingCounter++;
-       if(value!=null) {
-         empty =false;
-         widgets.add(value);
-       }
-       if (mounted) setState(() {});
+       addData(value);
     });
      calculateSilverZakat().then((value) {
-       loadingCounter++;
-       if(value!=null) {
-         empty =false;
-         widgets.add(value);
-       }
-       if (mounted) setState(() {});
+       addData(value);
      });
      calculateLivestockZakat().then((value) {
-       loadingCounter++;
-       if(value!=null) {
-         empty =false;
-         widgets.add(value);
-       }
-       if (mounted) setState(() {});
+       addData(value);
      });
      calculateCropsZakat().then((value) {
-       loadingCounter++;
-       if(value!=null) {
-         empty =false;
-         widgets.add(value);
-       }
-       if (mounted) setState(() {});
+       addData(value);
      });
      calculateStockZakat().then((value){
-       loadingCounter++;
-       if(value!=null) {
-         empty =false;
-         widgets.add(value);
-       }
-       if (mounted) setState(() {});
+       addData(value);
      });
 
   }

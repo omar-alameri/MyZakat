@@ -1,9 +1,7 @@
-import 'package:app2/main.dart';
 import 'package:app2/shared/DataBase.dart';
 import 'package:app2/shared/myDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 
 class homePage extends StatefulWidget {
   const homePage({Key? key}) : super(key: key);

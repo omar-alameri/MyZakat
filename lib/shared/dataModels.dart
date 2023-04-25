@@ -284,3 +284,58 @@ class Language {
     return 'Language{id: $id, language: $language, page: $page name: $name, data: $data}';
   }
 }
+class Zakat {
+  final int? id;
+  final String Gold;
+  final String Silver;
+  final String Stock;
+  final String Crops;
+  final String Livestock;
+  final String Money;
+  final String userEmail;
+  final DateTime date;
+
+
+  const Zakat({
+    this.id,
+    required this.Gold,
+    required this.Silver,
+    required this.Stock,
+    required this.Crops,
+    required this.Livestock,
+    required this.Money,
+    required this.userEmail,
+    required this.date,
+  });
+  factory Zakat.fromMap(Map<String, dynamic> json) =>  Zakat(
+    id: json['id'],
+    Gold: json['Gold'],
+    Silver: json['Silver'],
+    Stock: json['Stock'],
+    Crops: json['Crops'],
+    Livestock: json['Livestock'],
+    Money: json['Money'],
+    userEmail: json['userEmail'],
+    date: DateTime.parse(json['date']),
+  );
+  // Convert a Crops into a Map. The keys must correspond to the names of the
+  // columns in the database.
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'Gold': Gold,
+      'Silver': Silver,
+      'Stock': Stock,
+      'Crops': Crops,
+      'Livestock': Livestock,
+      'Money': Money,
+      'userEmail': userEmail,
+      'date': date.toIso8601String(),
+    };
+  }
+  // Implement toString to make it easier to see information
+  @override
+  String toString() {
+    return 'Zakat{id: $id, Gold: $Gold, Silver: $Silver Stock: $Stock, Crops: $Crops, Livestock: $Livestock, Money: $Money, userEmail: $userEmail, date: ${date.toString()}}';
+  }
+}
