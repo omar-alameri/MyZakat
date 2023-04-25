@@ -42,7 +42,7 @@ class AppManager extends ChangeNotifier {
     return prefs.remove(key);
   }
 
-  static Future<List<String>> get_StockPrice(String StockName) async {
+  static Future<List<String>> getStockPrice(String StockName) async {
     final url =
         Uri.parse('https://finance.yahoo.com/quote/$StockName?p=$StockName');
     try {
@@ -65,7 +65,7 @@ class AppManager extends ChangeNotifier {
     }
   }
 
-  static Future<List<List<String>>> search_StockName(String StockName) async {
+  static Future<List<List<String>>> searchStockName(String StockName) async {
     final url = Uri.parse(
         'https://finance.yahoo.com/lookup/equity?s=$StockName&t=A&b=0&c=100');
     try {
@@ -95,7 +95,7 @@ class AppManager extends ChangeNotifier {
     }
   }
 
-  static Future<List<String>> search_Currency(String Currency) async {
+  static Future<List<String>> searchCurrency(String Currency) async {
     final url = Uri.parse(
         'https://finance.yahoo.com/lookup/currency?s=usd$Currency&t=A&b=0&c=100');
     try {
@@ -112,7 +112,7 @@ class AppManager extends ChangeNotifier {
     }
   }
 
-  static Future get_GoldPrice() async {
+  static Future getGoldPrice() async {
     final url = Uri.parse('https://finance.yahoo.com/quote/GC=F/');
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
@@ -129,7 +129,7 @@ class AppManager extends ChangeNotifier {
     return [titles[0], Currency];
   }
 
-  static Future<String> get_GoldPriceDubai() async {
+  static Future<String> getGoldPriceDubai() async {
     final url = Uri.parse('https://www.goldpricesdubai.com');
     try {
       final response = await http.get(url);
@@ -144,7 +144,7 @@ class AppManager extends ChangeNotifier {
     }
   }
 
-  static Future<String> get_SilverPrice() async {
+  static Future<String> getSilverPrice() async {
     final url =
         Uri.parse('https://www.worldforexrates.com/xag/aed/1-exchange-rate/');
     try {
@@ -171,13 +171,10 @@ class AppManager extends ChangeNotifier {
     //print("Email verification link has expired. Please sign up again");
   }
 
-  static Future<double> get_CurrencyConversion(
+  static Future<double> getCurrencyConversion(
       String initial, String finalCurrency, double money) async {
-    DateTime d = DateTime.now();
-
     initial = "$initial=X";
     finalCurrency = "$finalCurrency=X";
-    // print(initial.substring(0, 3)+finalCurrency.substring(0, 3)+money.toString());
     final url =
         Uri.parse('https://finance.yahoo.com/quote/$initial?p=$initial');
     try {
@@ -201,17 +198,14 @@ class AppManager extends ChangeNotifier {
           .toList();
       double conversionRate = double.parse(titles2[0]);
       double moneyInDesiredCurrency = moneyInUsd * conversionRate;
-      // print("From USD to ${finalCurrency.substring(0, 3)} : ${moneyInDesiredCurrency.toString()} ${finalCurrency.substring(0, 3)}");
-      print(DateTime.now().second - d.second);
       return moneyInDesiredCurrency;
     } on Exception {
       return -1;
     }
   }
 
-  static Future<double> googleCurrencyRate(
+  static Future<double> getCurrencyRateGoogle(
       String initial, String finalCurrency) async {
-    DateTime d = DateTime.now();
     final url = Uri.parse(
         'https://www.google.com/finance/quote/$initial-$finalCurrency');
     try {
@@ -221,7 +215,6 @@ class AppManager extends ChangeNotifier {
           .querySelectorAll('div[class="YMlKec fxKbKc"]')
           .map((e) => e.innerHtml.trim())
           .toList();
-      print(DateTime.now().second - d.second);
       return double.parse(titles[0]);
     } on Exception {
       return -1;

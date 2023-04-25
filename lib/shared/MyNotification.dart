@@ -36,15 +36,5 @@ class MyNotification {
     await fln.zonedSchedule(id++, title, body,tz.TZDateTime.from(date, tz.local) , not,
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         androidAllowWhileIdle: true);
-    print('massage: $id');
-
-  }
-  static Future getS({required FlutterLocalNotificationsPlugin fln}) async {
-    fln.getActiveNotifications().then((value) {
-      for(var n in value){
-        print(n.id);
-      }
-    });
-    return 1;
   }
 }

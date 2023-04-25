@@ -5,7 +5,6 @@ import 'package:app2/shared/tools.dart';
 import 'package:app2/shared/DataBase.dart';
 import 'package:flutter/services.dart';
 
-
 class DataType extends StatefulWidget {
   final String datatype;
   const DataType({super.key, required this.datatype});
@@ -22,6 +21,7 @@ class _DataTypeState extends State<DataType> {
   TextEditingController input3 = TextEditingController();
   String preferredCurrency = '';
   String userEmail = '';
+  Widget holder = const CircularProgressIndicator();
   final double sizeRatio = 0.6;
   Map<String,String> languageData = {};
   TextInputFormatter doubleFormatter = TextInputFormatter.withFunction((oldValue, newValue)
@@ -51,6 +51,9 @@ class _DataTypeState extends State<DataType> {
     {setState(() {preferredCurrency = value;});});
     AppManager.readPref('userEmail').then((value)
     {setState(() {userEmail = value;});});
+    AppManager.getGoldPriceDubai().then((value) {
+      setState(() {holder = Text('Gold Price: ${value.substring(1)}');});
+    });
     String language = await AppManager.readPref('Language');
     var data = await DatabaseHelper.instance.getLanguageData(language:language, page: widget.datatype);
       for (var e in data) {
@@ -98,7 +101,7 @@ class _DataTypeState extends State<DataType> {
                     }
                   },
                   asyncItems: (x) async{
-                    var s = await AppManager.search_Currency(selected??input2.text);
+                    var s = await AppManager.searchCurrency(selected??input2.text);
                     return s;
                   },
                   onChanged: (s){
@@ -112,7 +115,7 @@ class _DataTypeState extends State<DataType> {
                       onSubmitted: (s) async{
                         print('submit');
 
-                        List<String> list= await AppManager.search_Currency(s);
+                        List<String> list= await AppManager.searchCurrency(s);
                         if(!list.contains(s)) {
                           var snackBar = const SnackBar(
                             content: Center(child: Text('Invalid Currency')),
@@ -170,7 +173,7 @@ class _DataTypeState extends State<DataType> {
               child: IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () async {
-                  List<String> list= await AppManager.search_Currency(input2.text);
+                  List<String> list= await AppManager.searchCurrency(input2.text);
                   if(!list.contains(input2.text)) {
                     var snackBar = const SnackBar(
                       content: Center(child: Text('Invalid Currency')),
@@ -277,6 +280,7 @@ class _DataTypeState extends State<DataType> {
             height: MediaQuery.of(context).size.height*sizeRatio,
             child: DataTable(dataType: 'Gold',userEmail: userEmail,)
           ),
+          holder
         ],
       );
   }
@@ -541,7 +545,7 @@ class _DataTypeState extends State<DataType> {
                     },
                     onChanged: (s){
                       input1.text = s?.substring(0,s.indexOf(' '))??'';
-                      AppManager.get_StockPrice(input1.text).then((value) {
+                      AppManager.getStockPrice(input1.text).then((value) {
                         if(double.tryParse(value[0]) != null) {
                           DatabaseHelper.instance.convertRate(value[1], preferredCurrency).then((rate) {
                             setState(() {
@@ -559,7 +563,7 @@ class _DataTypeState extends State<DataType> {
                       });
                     },
                     asyncItems: (x) async{
-                      var s = await AppManager.search_StockName(selected);
+                      var s = await AppManager.searchStockName(selected);
                       List<String> list =[];
                       if(s.first[0]=='No Internet connection.') {
                         list.add(s.first[0]);

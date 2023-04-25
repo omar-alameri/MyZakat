@@ -284,29 +284,12 @@ class DatabaseHelper {
     await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "CamelHint4", data: 'أنثى الإبل التي أتمت أربع سنين و دخلت في الخامسة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Zakat', name: "No Zakat", data: "No Zakat is due").toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Zakat', name: "No Zakat", data: 'لا زكاة عليك').toMap());
-    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: "Shafi'i", data: "Shafi'i").toMap());
-    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanbali', data: 'Hanbali').toMap());
-    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Maliki', data: 'Maliki').toMap());
-    // await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanafi', data: 'Hanafi').toMap());
-    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: "Shafi'i", data: 'الشافعية: أن يكون'
-    //     ' مما يقتات اختياراً: كالبر، والشعير، والأرز، والذرة، والعدس، والحمص والفول؛ والدخن، فإن لم يكن صالحاً للاقتيات: كالحلبة، والكراويا،'
-    //     ' والكزبرة والكتان، فلا زكاة فيه؛ يكون نصاباً فأكثر؛ ولا يزكى من الثمار إلا العنب أو الرطب، فلا زكاة في الخوخ، والمشمش، والجوز، واللوز، والتين').toMap());
-    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanbali', data: 'الحنابلة: تجب زكاة الزروع والثمار،'
-    //     ' بشرطين زيادة على ما تقدم: الأول: أن تكون صالحة للادخار، الثاني: أن تبلغ نصاباً وقت وجوب الزكاة.فلا فرق فيما تجب فيه الزكاة بين'
-    //     ' كونه حباً أو غيره، مأكولاً أو غير مأكول: كالقمح، والفول، وحب الرشا، وحب الفجل، وحب الخردل، والزعتر، والأشنان وورق الشجر المقصود ...كورق السدر، والآس،'
-    //     ' وكتمر، وزبيب، ولوز، وفستق، وبندق، أما العناب والزيتون، فلا تجب الزكاة فيهما، كما تجب في الجوز الهندي، والتين، والتوت، وبقية الفواكه وقصب السكر، '
-    //     'واللفت، والكرنب، والبصل، والفجل، والورس، والنيلة، والحناء، والبرتقال، والقطن، والكتان، والزعفران، والعصفر، لأن هذه الأشياء لم يتحقق فيها الشرط الأول،').toMap());
-    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Maliki', data: 'المالكي').toMap());
-    // await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanafi', data: 'الحنفية:  يخرج زكاة كل ما تخرجه الأرض من الحنطة والشعير، والدخن، والأرز، وأصناف'
-    //     ' الحبوب والبقول، والرياحين، والورد وقصب السكر، والبطيخ والقثاء، والخيار، والباذنجان، والعصفر، والتمر والعنب وغير ذلك، سواء كانت له ثمرة تبقى'
-    //     ' أو لا، وسواء كان قليلاً أو كثيراًالحنفية:  يخرج زكاة كل ما تخرجه الأرض من الحنطة والشعير، والدخن، والأرز، وأصناف الحبوب والبقول، والرياحين'
-    //     '، والورد وقصب السكر، والبطيخ والقثاء، والخيار، والباذنجان، والعصفر، والتمر والعنب وغير ذلك، سواء كانت له ثمرة تبقى أو لا، وسواء كان قليلاً أو كثيراً.').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'MoneyInfo', name: 'All', data: '''- Nisab : the price of 85 grams of gold.
-    The zakat is 2.5% of what one owns, for ease of calculation it is the amount of money devised by 40.''').toMap());
+The zakat is 2.5% of what one owns, for ease of calculation it is the amount of money devised by 40.''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'MoneyInfo', name: 'All', data: '''نصاب المال 85 غرام من الذهب * سعر الذهب.
 و زكاته %2.5 من المال ; اي مقدار المال مقسوم على .40''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'GoldInfo', name: 'All', data: '''- Nisab : 85 grams of gold.
-    The zakat is 2.5% of what one owns of gold(or its equivalent in money).''').toMap());
+The zakat is 2.5% of what one owns of gold(or its equivalent in money).''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'GoldInfo', name: 'All', data: '''نصاب الذهب 85 غرام.
 و زكاته %2.5 من الذهب (أو ما يساويه من المال).''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'SilverInfo', name: 'All', data: '''- Nisab : 595 grams of silver. 
@@ -314,25 +297,57 @@ The zakat is 2.5% of what one owns of silver (or its equivalent in money).''').t
     await db.insert('Language',const Language(language: 'Arabic', page: 'SilverInfo', name: 'All', data: '''نصاب الفضة 595 غرام.
 و زكاته %2.5 من الفضة (أو ما يساويه من المال).''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'LivestockInfo', name: 'All', data: '''There is no particular Nisab , but one hand over based on how much he owns as
-    shown in the below table( or its equivalent in money).
-    It must be noted that only grazing livestock most of the year are required for zakat, meaning the ones that eat from the earth and are not paid to eat.''').toMap());
+shown in the below table( or its equivalent in money).
+It must be noted that only grazing livestock most of the year are required for zakat, meaning the ones that eat from the earth and are not paid to eat.''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'LivestockInfo', name: 'All', data: '''الزكاة فقط في السائمة; اي التي ترعى، و شرط انها رعت اكثر العام (الزكاة قد تكون بما يساويها من المال). ''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'LivestockInfo', name: 'Maliki', data: '''There is no particular Nisab , but one hand over based on how much he owns as shown in the below table( or its equivalent in money). 
-    It must be noted that both grazing and non -grazing livestock are required for Zakat.''').toMap());
+It must be noted that both grazing and non -grazing livestock are required for Zakat.''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'LivestockInfo', name: 'Maliki', data: '''الزكاة في السائمة; اي التي ترعى، و شرط انها رعت اكثر العام، و المعلوفة; اي التي ينفق عليها صاحبها و لا ترعى (الزكاة قد تكون بما يساويها من المال). ''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'All', data: '''- Nisab: 654 kg. 
 The zakat is 10% of what one owns if it was watered by rain, and 5% if it was watered by irrigation.''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'All', data: '''نصابه 5 اوسق، اي 654 كغ.
-    و زكاته %10 اذا سقيت بالطر و %5 اذا سقيت بالري. ''').toMap());
+و زكاته %10 اذا سقيت بالطر و %5 اذا سقيت بالري.''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'CropsInfo', name: 'Hanafi', data: '''- Nisab: There is no Nisab. 
 The zakat is 10% of what one owns if it was watered by rain, and 5% if it was watered by irrigation.''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'CropsInfo', name: 'Hanafi', data: '''لا نصاب.
-    و زكاته %10 اذا سقيت بالطر و %5 اذا سقيت بالري.''').toMap());
+و زكاته %10 اذا سقيت بالطر و %5 اذا سقيت بالري.''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'StockInfo', name: 'All', data: '''- Nisab: There is no Nisab. 
 The zakat is 2.5% of the price of his shares, if he trades in them, i.e. buying and selling.
 But if he is saving it for a profit such as rent, then the zakat is 2.5% of the profits.''').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'StockInfo', name: 'All', data: '''زكاته %2.5 من سعر اسهمه، اذا كان يتاجر فيها اي للبيع و الشراء.
-    أما إذا كان يدخرها من أجل الأرباح كالإيجار فالزكاة %2.5 من الأرباح.''').toMap());
+أما إذا كان يدخرها من أجل الأرباح كالإيجار فالزكاة %2.5 من الأرباح.''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Info', name: 'Debt', data: 'Debt').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Info', name: 'Debt', data: 'دين').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'DebtInfo', name: 'Maliki', data: '''The debt you owe is added with the zakat of money.
+Here the debt is categorized into two, hard or easy to regain. If it is easy to regain then:
+One only pay the zakat of what is indebted to him for one year when he regains it.
+If the money is hard to regain then:
+One only pay the zakat of what is indebted to him for one year when he regains it.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'DebtInfo', name: 'Maliki', data: '''يضاف الذي تدين به مع زكاة المال.
+الدين المرجو أدائه; أي يستطيع المديون سده أو يسهل استرداده:
+يزكي عند القبض لسنة واحدة.
+الدين الغير الرجو ادائه; أي لا يستطيع المديون سده أو يصعب استرداده:
+يزكيه عند القبض، لسنة واحدة.''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'DebtInfo', name: "Shafi'i", data: '''The debt you owe is added with the zakat of money.
+Here the debt is categorized into two, hard or easy to regain. If it is easy to regain then:
+One must add what is indebted to him to the money he owns every year even if one have yet to regain it, and calculate zakat accordingly.
+If the money is hard to regain then:
+One must pay the Zakat of what is indebted to him when he regains it for all the years that he did not have it.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'DebtInfo', name: "Shafi'i", data: '''يضاف الذي تدين به مع زكاة المال.
+الدين المرجو أدائه; أي يستطيع المديون سده أو يسهل استرداده:
+يزكي مع ماله كل حول.
+الدين الغير الرجو ادائه; أي لا يستطيع المديون سده أو يصعب استرداده:
+يزكيه عند القبض، لكل السني التي مضت. و هكذا للدين الؤجل.''').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'DebtInfo', name: "All", data: '''The debt you owe is added with the zakat of money.
+Here the debt is categorized into two, hard or easy to regain. If it is easy to regain then:
+One must add what is indebted to him to the money he owns and pay its zakat every passing year, but it is not necessary to pay before he one gets his money back, in that case he should pay for all the years that have passed.
+If the money is hard to regain then:
+One should not include it in one’s Zakat.''').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'DebtInfo', name: "All", data: '''يضاف الذي تدين به مع زكاة المال.
+الدين المرجو أدائه; أي يستطيع المديون سده أو يسهل استرداده:
+له زكاه كل حول، ولكن لا يجب الزكاة فيه حتى يقبص الدين (يحصل عليه)، عندها الزكاة لكل السنين التي مضت.
+الدين الغير الرجو ادائه; أي لا يستطيع المديون سده أو يصعب استرداده:
+لا زكاة فيه. و هكذا للدين المؤجل.''').toMap());
 
   }
   Future<List<dynamic>> getData({required String userEmail,required String type}) async {
@@ -362,7 +377,6 @@ But if he is saving it for a profit such as rent, then the zakat is 2.5% of the 
   }
   Future<List<Language>> getLanguageData ({required String language,required String page} ) async {
     Database db = await instance.database;
-
     // print('done');
     var data = await db.query('Language', where: 'language = ? and page = ?', whereArgs: [language,page]);
     return data.isNotEmpty ? data.map((c) => Language.fromMap(c)).toList() : [];
@@ -389,7 +403,7 @@ But if he is saving it for a profit such as rent, then the zakat is 2.5% of the 
     if (data.isEmpty) {
       data = await db.query('Currency', where: 'initial = ? AND final = ?', whereArgs: [Final,Initial],orderBy: 'date');
       if (data.isEmpty) {
-        rate = await AppManager.googleCurrencyRate(Initial, Final);
+        rate = await AppManager.getCurrencyRateGoogle(Initial, Final);
         if (rate != -1) {
           db.insert('Currency', {
             'initial': Initial,
@@ -406,7 +420,7 @@ But if he is saving it for a profit such as rent, then the zakat is 2.5% of the 
       //print(d.toString()+DateTime.now().toString());
       if(DateTime.now().minute - d.minute > 10 ) {
         print('outdated');
-        rate = await AppManager.googleCurrencyRate(Initial, Final);
+        rate = await AppManager.getCurrencyRateGoogle(Initial, Final);
         if(rate !=-1) {
           db.insert('Currency', {'initial': Initial,'final':Final,'rate': rate,'date':DateTime.now().toIso8601String()});
           return rate;

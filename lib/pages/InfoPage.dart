@@ -1,7 +1,5 @@
 import 'package:app2/shared/DataBase.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../shared/tools.dart';
 
 class InfoPage extends StatefulWidget {
@@ -18,7 +16,8 @@ class _InfoPageState extends State<InfoPage> {
     'Livestock',
     'Silver',
     'Crops',
-    'Stock'
+    'Stock',
+    'Debt'
   ];
   Map<String, String> languageData = {};
   String language = '';
@@ -88,6 +87,12 @@ class _InfoPageState extends State<InfoPage> {
         }
       }
     }
+    data= await DatabaseHelper.instance
+        .getLanguageData(language: language, page: 'Info');
+      for (var e in data) {
+          languageData[e.name] = e.data;
+      }
+
 
     setState(() {});
   }
@@ -115,7 +120,6 @@ class _InfoState extends State<Info> {
     language = await AppManager.readPref('Language');
     var data = await DatabaseHelper.instance
         .getLanguageData(language: language, page: '${widget.dataType}Info');
-    print(data);
     for (var e in data) {
       languageData[e.name] = e.data;
     }

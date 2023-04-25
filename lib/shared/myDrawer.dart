@@ -185,7 +185,7 @@ class _myDrawerState extends State<myDrawer> {
                 }
               },
               asyncItems: (x) async {
-                var s = await AppManager.search_Currency(selectedCurrency.text);
+                var s = await AppManager.searchCurrency(selectedCurrency.text);
                 return s;
               },
               onChanged: (s) {
@@ -197,7 +197,7 @@ class _myDrawerState extends State<myDrawer> {
               dropdownBuilder: (context, s) {
                 return TextField(
                   onSubmitted: (s) async {
-                    List<String> list = await AppManager.search_Currency(s);
+                    List<String> list = await AppManager.searchCurrency(s);
                     if (!list.contains(s)) {
                       var snackBar = const SnackBar(
                         content: Center(child: Text('Invalid Currency')),

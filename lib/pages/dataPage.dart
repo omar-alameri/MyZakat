@@ -8,6 +8,8 @@ import 'package:app2/shared/DataBase.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:hijri_picker/hijri_picker.dart';
 
+import 'InfoPage.dart';
+
 class DataPage extends StatefulWidget {
   const DataPage({Key? key}) : super(key: key);
 
@@ -215,14 +217,26 @@ class _DataPageState extends State<DataPage> {
                           initiallyExpanded: index == selectedId,
                           textColor: Colors.green,
                           iconColor: Colors.green,
-                          title: Text(languageData[activeItems[index]] ??
-                              activeItems[index]),
+                          title: Row(
+                            children: [
+                              Text(languageData[activeItems[index]] ??
+                                  activeItems[index]),
+                              IconButton(onPressed: (){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Info(
+                                          dataType: activeItems[index],
+                                        )));
+                              }, icon: const Icon(Icons.info_rounded))
+                            ],
+                          ),
                           onExpansionChanged: (value) {
                             if (value) {
                               setState(() {
                                 selectedId = index;
                               });
-                              Timer.periodic(const Duration(milliseconds: 100),
+                              Timer.periodic(const Duration(milliseconds: 500),
                                   (timer) {
                                 scroll.animateTo((66.0 * index + 50),
                                     duration: const Duration(milliseconds: 500),

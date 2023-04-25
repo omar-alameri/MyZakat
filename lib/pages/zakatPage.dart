@@ -7,10 +7,11 @@ class ZakatPage extends StatefulWidget {
   const ZakatPage({Key? key}) : super(key: key);
 
   @override
-  State<ZakatPage> createState() => _ZakatPageState();
+  State<ZakatPage> createState() => ZakatPageState();
+
 }
 
-class _ZakatPageState extends State<ZakatPage> {
+class ZakatPageState extends State<ZakatPage> {
   List<Widget> widgets =[];
   Map<String,dynamic> zakat = {};
   int loadingCounter = 0;
@@ -34,7 +35,7 @@ class _ZakatPageState extends State<ZakatPage> {
     for (var money in list){
       total +=  await DatabaseHelper.instance.convertRate(money.currency,preferredCurrency)*money.amount;
     }
-    String gold = await AppManager.get_GoldPriceDubai();
+    String gold = await AppManager.getGoldPriceDubai();
     if(double.tryParse(gold.substring(0,5)) != null) {
       double goldPrice = double.parse(gold.substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
@@ -66,10 +67,10 @@ class _ZakatPageState extends State<ZakatPage> {
     List<dynamic> list = await DatabaseHelper.instance.getData(userEmail:userEmail,type:'Stock');
     List<String> stockPrice;
     for (var stock in list){
-      stockPrice = await AppManager.get_StockPrice(stock.stock);
+      stockPrice = await AppManager.getStockPrice(stock.stock);
       total += await DatabaseHelper.instance.convertRate(stockPrice[1], preferredCurrency)*double.parse(stockPrice[0])*stock.amount;
     }
-    String gold = await AppManager.get_GoldPriceDubai();
+    String gold = await AppManager.getGoldPriceDubai();
     if(double.tryParse(gold.substring(0,5)) != null) {
       double goldPrice = double.parse(gold.substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
@@ -110,7 +111,7 @@ class _ZakatPageState extends State<ZakatPage> {
         total += e.amount*(18/24);
       }
     }
-    String goldList = await AppManager.get_GoldPriceDubai();
+    String goldList = await AppManager.getGoldPriceDubai();
     if(double.tryParse(goldList.substring(0,5)) != null) {
       double goldPrice = double.parse(goldList.substring(0,5));
       goldPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*goldPrice;
@@ -153,7 +154,7 @@ class _ZakatPageState extends State<ZakatPage> {
         total += e.amount*0.8;
       }
     }
-    String silver = await AppManager.get_SilverPrice();
+    String silver = await AppManager.getSilverPrice();
     if(double.tryParse(silver) != null) {
       double silverPrice = double.parse(silver);
       silverPrice = await DatabaseHelper.instance.convertRate('AED', preferredCurrency)*silverPrice;
@@ -443,7 +444,7 @@ class _ZakatPageState extends State<ZakatPage> {
   }
   void addData(dynamic value){
   loadingCounter++;
-  if(loadingCounter>=6) {
+  if(loadingCounter>=6&&(zakat['Gold']!=''||zakat['Silver']!=''||zakat['Stock']!=''||zakat['Crops']!=''||zakat['Livestock']!=''||zakat['Money']!='')) {
   DatabaseHelper.instance.addData(
   Zakat(Gold: zakat['Gold'], Silver: zakat['Silver'], Stock: zakat['Stock'], Crops: zakat['Crops'], Livestock: zakat['Livestock'], Money: zakat['Money'], userEmail: userEmail, date: DateTime.now()));
   }
@@ -455,7 +456,6 @@ class _ZakatPageState extends State<ZakatPage> {
 }
 
   void getData() async{
-    setState(() {});
     var data = await DatabaseHelper.instance.getLanguageData(language:language, page: 'Zakat');
     for (var e in data) {
       languageData[e.name]=e.data;
