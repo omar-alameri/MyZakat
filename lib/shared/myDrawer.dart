@@ -1,11 +1,13 @@
 import 'package:app2/main.dart';
 import 'package:app2/pages/LoginPage.dart';
+import 'package:app2/shared/dataModels.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:app2/shared/tools.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'DataBase.dart';
+import 'FireStoreFunctions.dart';
 
 class myDrawer extends StatefulWidget {
   final Function() onDispose;
@@ -19,7 +21,7 @@ class _myDrawerState extends State<myDrawer> {
   List<String> itemsL = <String>['English', 'Arabic'];
   List<String> itemsS = <String>["Shafi'i", 'Hanbali', 'Maliki', 'Hanafi'];
   List<DropdownMenuItem> schoolDropDown = [];
-  List<String> words = ['Language', 'School', 'Currency', 'Logout'];
+  List<String> words = ['Language', 'School', 'Currency', 'Logout','Download','Upload'];
   Map<String, String> languageData = {};
 
   String selectedLanguage = 'English';
@@ -73,6 +75,64 @@ class _myDrawerState extends State<myDrawer> {
     if (mounted) {
       setState(() {});
     }
+  }
+  void uploadData() async{
+    String userEmail = await AppManager.readPref('userEmail');
+    List<String> list = <String>[
+      'Gold',
+      'Money',
+      'Livestock',
+      'Silver',
+      'Crops',
+      'Stock',
+      'Zakat'
+    ];
+    String date = DateTime.now().toIso8601String();
+    for (var type in list) {
+      var temp = await DatabaseHelper.instance.getData(userEmail: userEmail, type: type);
+      Map<String,dynamic> data = {};
+      await get_User_Document_Id(userEmail);
+      await create_NewEntry_ZakatData(date);
+      for( var d in temp) {
+        data[d.id.toString()]=d.toMap();
+      }
+      await Write_User_ZakatData(data, type, date);
+    }
+  }
+  void downloadData() async{
+    List<String> list = <String>[
+      'Silver',
+      'Gold',
+      'Livestock',
+      'Crops',
+      'Money',
+      'Stock',
+      'Zakat'
+    ];
+    String userEmail = await AppManager.readPref('userEmail');
+    await get_User_Document_Id(userEmail);
+    await Read_User_Zakat_DataV2();
+    for(var type in Zakat_Data) {
+      switch(type.keys.first) {
+        case 'Money' :
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Money.fromMap(value));});break;
+        case 'Gold':
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Gold.fromMap(value));});break;
+        case 'Silver':
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Silver.fromMap(value));});break;
+        case 'Livestock':
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Livestock.fromMap(value));});break;
+        case 'Crops':
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Crops.fromMap(value));});break;
+        case 'Stock':
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Stock.fromMap(value));});break;
+        case 'Zakat':
+          type.values.first.forEach((String key,value){DatabaseHelper.instance.addData(Zakat.fromMap(value));});break;
+      }
+    }
+
+
+
   }
 
   @override
@@ -252,17 +312,52 @@ class _myDrawerState extends State<myDrawer> {
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: () {
-                    AppManager.removePref('userEmail');
-                    signOut();
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, '/', (route) => false);
-                  },
-                  child: Text(languageData['Logout'] ?? 'Log out'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 0),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(const Size.fromHeight(35))
+                        ),
+                        onPressed: uploadData,
+                        child: Text(languageData['Upload'] ??'Upload'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(const Size.fromHeight(35))
+                        ),
+                        onPressed: downloadData,
+                        child: Text(languageData['Download'] ??'Download'),
+                      ),
+                    ),
+                    const Divider(
+                      thickness: 1,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          minimumSize: MaterialStateProperty.all(const Size.fromHeight(35))
+                        ),
+                        onPressed: () {
+                          AppManager.removePref('userEmail');
+                          signOut();
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/', (route) => false);
+                        },
+                        child: Text(languageData['Logout'] ?? 'Log out'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
+
           ],
         )));
   }

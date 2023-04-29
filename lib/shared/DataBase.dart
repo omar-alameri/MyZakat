@@ -146,12 +146,16 @@ class DatabaseHelper {
     await db.insert('Language',const Language(language: 'Arabic', page: 'General', name: 'Currency', data: 'العملة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'General', name: 'Logout', data: 'Logout').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'General', name: 'Logout', data: 'تسجيل خروج').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'General', name: 'Download', data: 'Download Data').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'General', name: 'Download', data: 'حمل بياناتك').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'General', name: 'Upload', data: 'Upload Data').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'General', name: 'Upload', data: 'ارفع بياناتك').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'School', name: 'Question', data: 'Choose your School').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'School', name: 'Question', data: 'اختر مذهبك').toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'Home', name: 'Start', data: 'Start').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'Home', name: 'Start', data: 'ابدأ').toMap());
-    await db.insert('Language',const Language(language: 'English', page: 'Home', name: 'Info', data: 'Info').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'Home', name: 'Info', data: 'معلومات').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Home', name: 'Start', data: 'Calculate Your Zakat').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Home', name: 'Start', data: 'احسب زكاتك').toMap());
+    await db.insert('Language',const Language(language: 'English', page: 'Home', name: 'Info', data: 'Info about zakat').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Home', name: 'Info', data: 'معلومات عن الزكاة').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Select', data: 'Select a type').toMap());
     await db.insert('Language',const Language(language: 'Arabic', page: 'Data', name: 'Select', data: 'اختر نوع').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Data', name: 'Add', data: 'Add').toMap());
@@ -317,7 +321,7 @@ But if he is saving it for a profit such as rent, then the zakat is 2.5% of the 
     await db.insert('Language',const Language(language: 'Arabic', page: 'StockInfo', name: 'All', data: '''زكاته %2.5 من سعر اسهمه، اذا كان يتاجر فيها اي للبيع و الشراء.
 أما إذا كان يدخرها من أجل الأرباح كالإيجار فالزكاة %2.5 من الأرباح.''').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'Info', name: 'Debt', data: 'Debt').toMap());
-    await db.insert('Language',const Language(language: 'Arabic', page: 'Info', name: 'Debt', data: 'دين').toMap());
+    await db.insert('Language',const Language(language: 'Arabic', page: 'Info', name: 'Debt', data: 'الديون').toMap());
     await db.insert('Language',const Language(language: 'English', page: 'DebtInfo', name: 'Maliki', data: '''The debt you owe is added with the zakat of money.
 Here the debt is categorized into two, hard or easy to regain. If it is easy to regain then:
 One only pay the zakat of what is indebted to him for one year when he regains it.
@@ -383,7 +387,11 @@ One should not include it in one’s Zakat.''').toMap());
   }
   Future<int> addData(var data) async {
     Database db = await instance.database;
-    return await db.insert(data.runtimeType.toString(), data.toMap());
+    try {
+      return await db.insert(data.runtimeType.toString(), data.toMap());
+    } on Exception {
+      return -1;
+    }
   }
   Future<int> removeData(var data) async {
     Database db = await instance.database;

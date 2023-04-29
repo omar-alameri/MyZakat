@@ -51,9 +51,11 @@ class _DataTypeState extends State<DataType> {
     {setState(() {preferredCurrency = value;});});
     AppManager.readPref('userEmail').then((value)
     {setState(() {userEmail = value;});});
-    AppManager.getGoldPriceDubai().then((value) {
-      setState(() {holder = Text('Gold Price: ${value.substring(1)}');});
-    });
+    if (widget.datatype=='Gold') {
+      AppManager.getGoldPriceDubai().then((value) {
+        if(mounted)setState(() {holder = Text('Gold Price: ${value.substring(1)}');});
+      });
+    }
     String language = await AppManager.readPref('Language');
     var data = await DatabaseHelper.instance.getLanguageData(language:language, page: widget.datatype);
       for (var e in data) {
@@ -723,33 +725,29 @@ class _DataTableState extends State<DataTable> {
             physics: const BouncingScrollPhysics(),
             children: snapshot.data!.map((dataInstance) {
               return Center(
-                child: Column(
-                  children: [
-                    Row(
-                      children:[
-                        Expanded(flex:3,child: Text((dataType == 'Stock'? dataInstance.stock :dataInstance.amount.toString())+(dataType == 'Crops'?' Kg':''))),
-                        Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency : dataType == 'Livestock' ? languageData[dataInstance.type]?? dataInstance.type :
-                        dataType == 'Crops' ? dataInstance.price.toString() : dataType == 'Stock' ? dataInstance.amount.toString() :languageData[dataInstance.unit]??dataInstance.unit)),
-                        if (dataType == 'Stock') Expanded(flex: 3,child: Text(dataInstance.price.toString())) else if (dataType == 'Crops') Expanded(flex: 3,child: Text(languageData[dataInstance.type]??dataInstance.type)),
-                        Expanded(
-                          flex: 1,
-                          child: Text(dataInstance.date.toString().substring(0,11),style:const TextStyle(fontSize: 10),),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: ()  {
-                              setState(() {
-                                DatabaseHelper.instance.removeData(dataInstance);
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-
+                child: Row(
+                  children:[
+                    Expanded(flex:3,child: Text((dataType == 'Stock'? dataInstance.stock :dataInstance.amount.toString())+(dataType == 'Crops'?' Kg':''))),
+                    Expanded(flex:2,child: Text(dataType == 'Money' ? dataInstance.currency : dataType == 'Livestock' ? languageData[dataInstance.type]?? dataInstance.type :
+                    dataType == 'Crops' ? dataInstance.price.toString() : dataType == 'Stock' ? dataInstance.amount.toString() :languageData[dataInstance.unit]??dataInstance.unit)),
+                    if (dataType == 'Stock') Expanded(flex: 3,child: Text(dataInstance.price.toString())) else if (dataType == 'Crops') Expanded(flex: 3,child: Text(languageData[dataInstance.type]??dataInstance.type)),
+                    Expanded(
+                      flex: 1,
+                      child: Text(dataInstance.date.toString().substring(0,11),style:const TextStyle(fontSize: 10),),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: ()  {
+                          setState(() {
+                            DatabaseHelper.instance.removeData(dataInstance);
+                          });
+                        },
+                      ),
                     ),
                   ],
+
                 ),
               );
             }).toList(),

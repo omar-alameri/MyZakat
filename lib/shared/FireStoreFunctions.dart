@@ -112,7 +112,7 @@ Future Update_User(List<String> Data, String category) async {
 }
 
 
-Future Write_User_ZakatData(Map<String,String> Data, String category, String WantedZakatDate) async {
+Future Write_User_ZakatData(Map<String,dynamic> Data, String category, String WantedZakatDate) async {
   String ZakatCollection = "Users/$User_Document_Id/Zakat Data";
   CollectionReference Users = await FirebaseFirestore.instance.collection(ZakatCollection);
   if (User_Document_Id == "User Not found")
@@ -127,10 +127,10 @@ Future Write_User_ZakatData(Map<String,String> Data, String category, String Wan
 
 
 
-Future Append_User_ZakatData(Map<String,String> Data, String category, String WantedZakatDate) async {
+Future Append_User_ZakatData(Map<String,dynamic> Data, String category, String WantedZakatDate) async {
   String ZakatCollection = "Users/$User_Document_Id/Zakat Data";
   List temp = [];
-  Map<String,String> InfoToSet;
+  Map<String,dynamic> InfoToSet;
   await Read_User_Zakat_Data(WantedZakatDate);
 
   // print("Pre Add Data: $Data");
@@ -141,7 +141,7 @@ Future Append_User_ZakatData(Map<String,String> Data, String category, String Wa
       temp =Zakat_Data.elementAt(i).values.toList();
       for(int j=0;j<temp.elementAt(0).keys.length;j++)
       {
-        InfoToSet = <String, String>{
+        InfoToSet = <String, dynamic>{
           temp.elementAt(0).keys.elementAt(j): temp.elementAt(0).values.elementAt(j),
 
         };
@@ -258,7 +258,27 @@ void Detach_StockandCrypto(List F){
     print('${F.elementAt(0).keys.elementAt(indexF)}: ${RateandAmount[0]}  ${RateandAmount[1]}');
   }
 
+}
 
+Future Read_User_Zakat_DataV2() async {
+  await Read_User_Zakat_Dates();
+  await create_NewEntry_ZakatData(Zakat_Dates.last["Id"]);
+  Read_User_Zakat_Data(Zakat_Dates.last["Id"]);
 
+  String ZakatCollection = "Users/" + User_Document_Id + "/Zakat Data";
+  List<Map> Value = [];
+  final docRef = FirebaseFirestore.instance.collection(ZakatCollection).doc(
+      Zakat_Dates.last["Id"]);
+   docRef.get().then(
+        (doc) {
+      final TempData = doc.data();
+// print("TempData: $TempData");
+      TempData?.forEach((k, v) => Value.add({k: v})
+      );
+      Zakat_Data = Value;
+      return Zakat_Data;
+    },
+    onError: (e) => print("Error getting document: $e"),
+  );
 
 }
